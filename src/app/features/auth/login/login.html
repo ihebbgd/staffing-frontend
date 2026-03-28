@@ -1,0 +1,80 @@
+<!-- Atmospheric Background -->
+<div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+  <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full"></div>
+  <div class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-tertiary/5 blur-[120px] rounded-full"></div>
+</div>
+
+<main class="w-full max-w-[420px] z-10 relative">
+  <!-- Brand -->
+  <div class="flex flex-col items-center mb-stack-lg">
+    <div class="w-12 h-12 bg-primary-container rounded-xl flex items-center justify-center mb-stack-md shadow-lg shadow-primary/20">
+      <span class="material-symbols-outlined text-on-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">dataset</span>
+    </div>
+    <h1 class="font-headline-md text-headline-md font-bold tracking-tight text-on-surface">Apex Resource</h1>
+    <p class="font-body-md text-text-muted mt-2">Enterprise Access Management</p>
+  </div>
+
+  <!-- Card -->
+  <div class="bg-surface-container-lowest login-card border border-border-subtle rounded-xl p-stack-lg transition-soft">
+    <form class="space-y-stack-md" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Email -->
+      <div class="space-y-2">
+        <label class="font-label-md text-label-md text-on-surface-variant block" for="email">EMAIL ADDRESS</label>
+        <div class="relative">
+          <input class="w-full h-11 px-4 bg-transparent border border-border-subtle rounded-lg font-body-md text-on-surface input-focus-ring transition-soft placeholder:text-outline-variant" id="email" placeholder="name@company.com" type="text" formControlName="username"/>
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">mail</span>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-center">
+          <label class="font-label-md text-label-md text-on-surface-variant block" for="password">PASSWORD</label>
+          <a class="font-label-sm text-label-sm text-primary hover:text-tertiary transition-soft" href="#">FORGOT PASSWORD?</a>
+        </div>
+        <div class="relative">
+          <input class="w-full h-11 px-4 bg-transparent border border-border-subtle rounded-lg font-body-md text-on-surface input-focus-ring transition-soft placeholder:text-outline-variant" id="password" placeholder="••••••••" type="password" formControlName="password"/>
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">lock</span>
+        </div>
+      </div>
+
+      <!-- Remember -->
+      <div class="flex items-center space-x-2 py-1">
+        <input class="w-4 h-4 rounded border-border-subtle text-primary focus:ring-primary/20" id="remember" type="checkbox"/>
+        <label class="font-body-md text-on-surface-variant text-sm" for="remember">Keep me signed in</label>
+      </div>
+
+      <!-- Submit -->
+      @if (errorMessage()) {
+        <p class="text-error text-sm font-body-md">{{ errorMessage() }}</p>
+      }
+      <button class="w-full h-11 bg-primary text-on-primary font-headline-md text-[15px] font-semibold rounded-lg hover:bg-tertiary active:scale-[0.98] transition-all duration-200 shadow-md shadow-primary/10 disabled:opacity-60" type="submit" [disabled]="loading()">
+        {{ loading() ? 'Signing in...' : 'Sign In' }}
+      </button>
+    </form>
+
+    <!-- Divider -->
+    <div class="relative my-stack-lg">
+      <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-border-subtle"></div></div>
+      <div class="relative flex justify-center text-xs">
+        <span class="bg-surface-container-lowest px-4 font-label-sm text-outline-variant">OR CONTINUE WITH</span>
+      </div>
+    </div>
+
+    <!-- SSO -->
+    <button class="w-full h-11 flex items-center justify-center space-x-3 bg-transparent border border-border-subtle rounded-lg font-body-md text-on-surface-variant hover:bg-surface-container-low active:bg-surface-container-high transition-soft group" type="button">
+      <span class="material-symbols-outlined text-[20px] text-outline group-hover:text-primary transition-colors">corporate_fare</span>
+      <span>Sign in with SSO</span>
+    </button>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-stack-lg flex flex-col items-center space-y-4">
+    <div class="flex space-x-gutter">
+      <a class="font-label-sm text-label-sm text-text-muted hover:text-primary transition-soft" href="#">Privacy Policy</a>
+      <a class="font-label-sm text-label-sm text-text-muted hover:text-primary transition-soft" href="#">Terms of Service</a>
+      <a class="font-label-sm text-label-sm text-text-muted hover:text-primary transition-soft" href="#">Support</a>
+    </div>
+    <p class="font-label-sm text-label-sm text-outline-variant">© 2026 Apex Resource. All rights reserved.</p>
+  </footer>
+</main>
