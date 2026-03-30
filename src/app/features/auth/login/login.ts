@@ -43,7 +43,7 @@ export class Login {
         localStorage.setItem('accessToken', response.accessToken);
         localStorage.setItem('refreshToken', response.refreshToken);
         this.loading.set(false);
-        this.router.navigate(['/login']); // temporary — no dashboard route yet
+        void this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         // failure: wrong credentials, server down, or CORS
