@@ -1,30 +1,74 @@
-<div class="p-6">
-  <h1 class="font-headline-md text-[20px] font-medium text-on-surface mb-4">Dashboard</h1>
-
-  @if (loading()) {
-    <p class="font-body-md text-text-muted">Loading…</p>
-  } @else if (error()) {
-    <p class="font-body-md text-error">Couldn't load dashboard data. Is the backend running?</p>
-  } @else if (stats(); as s) {
-    <div class="grid grid-cols-4 gap-3">
-      <div class="bg-surface-container-lowest border border-border-subtle rounded-[10px] p-4">
-        <div class="text-[11px] text-text-muted">Total employees</div>
-        <div class="text-[19px] font-medium text-on-surface mt-1">{{ s.totalEmployees }}</div>
-        <div class="text-[11px] text-text-muted mt-0.5">{{ s.activeEmployees }} active</div>
-      </div>
-      <div class="bg-surface-container-lowest border border-border-subtle rounded-[10px] p-4">
-        <div class="text-[11px] text-text-muted">Active projects</div>
-        <div class="text-[19px] font-medium text-on-surface mt-1">{{ s.activeProjects }}</div>
-      </div>
-      <div class="bg-surface-container-lowest border border-border-subtle rounded-[10px] p-4">
-        <div class="text-[11px] text-text-muted">On bench</div>
-        <div class="text-[19px] font-medium text-on-surface mt-1">{{ s.benchCount }}</div>
-        <div class="text-[11px] text-text-muted mt-0.5">{{ s.benchPercentage }}% of staff</div>
-      </div>
-      <div class="bg-surface-container-lowest border border-border-subtle rounded-[10px] p-4">
-        <div class="text-[11px] text-text-muted">Avg utilization</div>
-        <div class="text-[19px] font-medium text-on-surface mt-1">{{ s.averageUtilizationPercent }}%</div>
-      </div>
-    </div>
-  }
+<div class="mb-6">
+  <h2 class="font-headline-lg text-[32px] font-semibold text-on-surface">Overview dashboard</h2>
+  <p class="text-on-surface-variant font-body-lg text-[16px] mt-1">Real-time resource analytics and workforce visibility.</p>
 </div>
+
+@if (loading()) {
+  <p class="font-body-md text-text-muted">Loading…</p>
+} @else if (error()) {
+  <p class="font-body-md text-error">Couldn't load dashboard data. Is the backend running?</p>
+} @else if (stats(); as s) {
+  <div class="grid grid-cols-4 gap-4">
+    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
+      <div class="p-2 bg-primary/10 rounded-lg text-primary w-fit mb-3">
+        <span class="material-symbols-outlined text-[20px]">groups</span>
+      </div>
+      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Total employees</p>
+      <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.totalEmployees }}</h3>
+      <p class="text-[12px] text-text-muted mt-1">{{ s.activeEmployees }} active</p>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
+      <div class="p-2 bg-primary/10 rounded-lg text-primary w-fit mb-3">
+        <span class="material-symbols-outlined text-[20px]">work</span>
+      </div>
+      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Active projects</p>
+      <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.activeProjects }}</h3>
+      <p class="text-[12px] text-text-muted mt-1">of all projects</p>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
+      <div class="p-2 bg-tertiary/10 rounded-lg text-tertiary w-fit mb-3">
+        <span class="material-symbols-outlined text-[20px]">chair</span>
+      </div>
+      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">On bench</p>
+      <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.benchCount }}</h3>
+      <p class="text-[12px] text-text-muted mt-1">{{ s.benchPercentage }}% of staff</p>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
+      <div class="p-2 bg-primary/10 rounded-lg text-primary w-fit mb-3">
+        <span class="material-symbols-outlined text-[20px]">speed</span>
+      </div>
+      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Avg utilization</p>
+      <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.averageUtilizationPercent }}%</h3>
+      <p class="text-[12px] text-text-muted mt-1">{{ s.allocationRate }}% allocation rate</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-3 gap-4 mt-4">
+    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
+      <div class="p-2 bg-secondary-container rounded-lg text-secondary w-fit mb-3">
+        <span class="material-symbols-outlined text-[20px]">schedule</span>
+      </div>
+      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Expiring in 30 days</p>
+      <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.certificationsExpiringIn30Days }}</h3>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
+      <div class="p-2 bg-primary/10 rounded-lg text-primary w-fit mb-3">
+        <span class="material-symbols-outlined text-[20px]">upcoming</span>
+      </div>
+      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Expiring in 60 days</p>
+      <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.certificationsExpiringIn60Days }}</h3>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
+      <div class="p-2 bg-error-container rounded-lg text-on-error-container w-fit mb-3">
+        <span class="material-symbols-outlined text-[20px]">warning</span>
+      </div>
+      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Expired certifications</p>
+      <h3 class="font-headline-md text-[26px] font-semibold text-error leading-tight">{{ s.expiredCertifications }}</h3>
+    </div>
+  </div>
+}
