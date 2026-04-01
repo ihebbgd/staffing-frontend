@@ -1,74 +1,111 @@
-<div class="mb-6">
-  <h2 class="font-headline-lg text-[32px] font-semibold text-on-surface">Overview dashboard</h2>
-  <p class="text-on-surface-variant font-body-lg text-[16px] mt-1">Real-time resource analytics and workforce visibility.</p>
+<div class="flex items-end justify-between mb-6">
+  <div>
+    <h2 class="font-headline-lg text-[28px] font-semibold text-on-surface">Overview</h2>
+    <p class="text-on-surface-variant font-body-md text-[14px] mt-1">Real-time workforce capacity and health.</p>
+  </div>
+  <span class="hidden sm:flex items-center gap-2 text-[13px] text-text-muted">
+    <span class="material-symbols-outlined text-[16px]">calendar_today</span>
+    {{ today | date:'EEEE, MMM d' }}
+  </span>
 </div>
 
 @if (loading()) {
-  <p class="font-body-md text-text-muted">Loading…</p>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="h-[260px] rounded-2xl skeleton"></div>
+    <div class="lg:col-span-2 grid grid-cols-2 gap-4">
+      @for (i of [1,2,3,4]; track i) { <div class="h-[122px] rounded-2xl skeleton"></div> }
+    </div>
+  </div>
 } @else if (error()) {
   <p class="font-body-md text-error">Couldn't load dashboard data. Is the backend running?</p>
 } @else if (stats(); as s) {
-  <div class="grid grid-cols-4 gap-4">
-    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
-      <div class="p-2 bg-primary/10 rounded-lg text-primary w-fit mb-3">
-        <span class="material-symbols-outlined text-[20px]">groups</span>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <!-- SIGNATURE: utilization gauge -->
+    <div class="rise bg-primary text-white rounded-2xl p-6 relative overflow-hidden flex flex-col items-center justify-center" style="animation-delay:0ms">
+      <div class="absolute top-[-25%] right-[-20%] w-[55%] h-[55%] bg-tertiary/40 blur-[60px] rounded-full"></div>
+      <div class="absolute bottom-[-25%] left-[-20%] w-[45%] h-[45%] bg-accent-cyan/20 blur-[60px] rounded-full"></div>
+      <p class="relative font-label-md text-[12px] uppercase tracking-widest text-white/70 mb-3">Average utilization</p>
+      <div class="relative w-[136px] h-[136px]">
+        <svg class="w-full h-full -rotate-90" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="10"/>
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#00D2D2" stroke-width="10" stroke-linecap="round"
+                  [attr.stroke-dasharray]="gaugeCircumference" [attr.stroke-dashoffset]="gaugeOffset()" class="gauge-arc"/>
+        </svg>
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+          <span class="font-headline-lg text-[32px] font-semibold leading-none">{{ s.averageUtilizationPercent }}%</span>
+          <span class="text-[11px] text-white/60 mt-1">of capacity</span>
+        </div>
       </div>
-      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Total employees</p>
-      <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.totalEmployees }}</h3>
-      <p class="text-[12px] text-text-muted mt-1">{{ s.activeEmployees }} active</p>
+      <p class="relative text-[13px] text-white/70 mt-4">{{ s.allocationRate }}% allocation rate</p>
     </div>
 
-    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
-      <div class="p-2 bg-primary/10 rounded-lg text-primary w-fit mb-3">
-        <span class="material-symbols-outlined text-[20px]">work</span>
+    <!-- Metric rail -->
+    <div class="lg:col-span-2 grid grid-cols-2 gap-4">
+      <div class="rise bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow" style="animation-delay:60ms">
+        <div class="p-2 bg-primary/10 rounded-lg text-primary w-fit mb-3"><span class="material-symbols-outlined text-[20px]">groups</span></div>
+        <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Total employees</p>
+        <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.totalEmployees }}</h3>
+        <div class="h-1.5 bg-surface-container-low rounded-full mt-3"><div class="h-1.5 bg-primary rounded-full bar" [style.width.%]="percent(s.activeEmployees, s.totalEmployees)"></div></div>
+        <p class="text-[12px] text-text-muted mt-2">{{ s.activeEmployees }} active</p>
       </div>
-      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Active projects</p>
-      <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.activeProjects }}</h3>
-      <p class="text-[12px] text-text-muted mt-1">of all projects</p>
-    </div>
 
-    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
-      <div class="p-2 bg-tertiary/10 rounded-lg text-tertiary w-fit mb-3">
-        <span class="material-symbols-outlined text-[20px]">chair</span>
+      <div class="rise bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow" style="animation-delay:120ms">
+        <div class="p-2 bg-primary/10 rounded-lg text-primary w-fit mb-3"><span class="material-symbols-outlined text-[20px]">work</span></div>
+        <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Active projects</p>
+        <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.activeProjects }}</h3>
+        <p class="text-[12px] text-text-muted mt-2">currently running</p>
       </div>
-      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">On bench</p>
-      <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.benchCount }}</h3>
-      <p class="text-[12px] text-text-muted mt-1">{{ s.benchPercentage }}% of staff</p>
-    </div>
 
-    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
-      <div class="p-2 bg-primary/10 rounded-lg text-primary w-fit mb-3">
-        <span class="material-symbols-outlined text-[20px]">speed</span>
+      <div class="rise bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow" style="animation-delay:180ms">
+        <div class="p-2 bg-tertiary/10 rounded-lg text-tertiary w-fit mb-3"><span class="material-symbols-outlined text-[20px]">chair</span></div>
+        <p class="text-on-surface-variant font-label-md text-[13px] mb-1">On bench</p>
+        <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.benchCount }}</h3>
+        <div class="h-1.5 bg-surface-container-low rounded-full mt-3"><div class="h-1.5 bg-amber-400 rounded-full bar" [style.width.%]="s.benchPercentage > 100 ? 100 : s.benchPercentage"></div></div>
+        <p class="text-[12px] text-text-muted mt-2">{{ s.benchPercentage }}% of staff</p>
       </div>
-      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Avg utilization</p>
-      <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.averageUtilizationPercent }}%</h3>
-      <p class="text-[12px] text-text-muted mt-1">{{ s.allocationRate }}% allocation rate</p>
+
+      <div class="rise bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow" style="animation-delay:240ms">
+        <div class="p-2 bg-primary/10 rounded-lg text-primary w-fit mb-3"><span class="material-symbols-outlined text-[20px]">assignment_ind</span></div>
+        <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Allocated</p>
+        <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.allocatedEmployees }}</h3>
+        <p class="text-[12px] text-text-muted mt-2">of {{ s.activeEmployees }} active</p>
+      </div>
     </div>
   </div>
 
-  <div class="grid grid-cols-3 gap-4 mt-4">
-    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
-      <div class="p-2 bg-secondary-container rounded-lg text-secondary w-fit mb-3">
-        <span class="material-symbols-outlined text-[20px]">schedule</span>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+    <div class="rise lg:col-span-2 bg-white p-5 rounded-2xl border border-border-subtle shadow-sm" style="animation-delay:300ms">
+      <div class="flex items-center justify-between mb-4">
+        <h4 class="font-headline-md text-[16px] font-medium text-on-surface">Workforce split</h4>
+        <span class="text-[12px] text-text-muted">{{ s.activeEmployees }} active</span>
       </div>
-      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Expiring in 30 days</p>
-      <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.certificationsExpiringIn30Days }}</h3>
+      <div class="flex h-3 rounded-full overflow-hidden bg-surface-container-low">
+        <div class="bg-primary bar" [style.width.%]="percent(s.allocatedEmployees, s.activeEmployees)"></div>
+        <div class="bg-amber-400 bar" [style.width.%]="percent(s.benchCount, s.activeEmployees)"></div>
+      </div>
+      <div class="flex gap-6 mt-4">
+        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-primary"></span><span class="text-[13px] text-on-surface-variant">Allocated</span><span class="text-[13px] font-medium text-on-surface">{{ s.allocatedEmployees }}</span></div>
+        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span><span class="text-[13px] text-on-surface-variant">On bench</span><span class="text-[13px] font-medium text-on-surface">{{ s.benchCount }}</span></div>
+      </div>
     </div>
 
-    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
-      <div class="p-2 bg-primary/10 rounded-lg text-primary w-fit mb-3">
-        <span class="material-symbols-outlined text-[20px]">upcoming</span>
+    <div class="rise bg-white p-5 rounded-2xl border border-border-subtle shadow-sm" style="animation-delay:360ms">
+      <h4 class="font-headline-md text-[16px] font-medium text-on-surface mb-4">Certification health</h4>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5"><span class="material-symbols-outlined text-[18px] text-amber-600">schedule</span><span class="text-[13px] text-on-surface-variant">Expiring · 30 days</span></div>
+          <span class="text-[12px] bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full font-medium">{{ s.certificationsExpiringIn30Days }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5"><span class="material-symbols-outlined text-[18px] text-blue-600">upcoming</span><span class="text-[13px] text-on-surface-variant">Expiring · 60 days</span></div>
+          <span class="text-[12px] bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full font-medium">{{ s.certificationsExpiringIn60Days }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5"><span class="material-symbols-outlined text-[18px] text-red-600">warning</span><span class="text-[13px] text-on-surface-variant">Expired</span></div>
+          <span class="text-[12px] bg-red-100 text-red-800 px-2.5 py-0.5 rounded-full font-medium">{{ s.expiredCertifications }}</span>
+        </div>
       </div>
-      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Expiring in 60 days</p>
-      <h3 class="font-headline-md text-[26px] font-semibold text-on-surface leading-tight">{{ s.certificationsExpiringIn60Days }}</h3>
-    </div>
-
-    <div class="bg-white p-5 rounded-2xl border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
-      <div class="p-2 bg-error-container rounded-lg text-on-error-container w-fit mb-3">
-        <span class="material-symbols-outlined text-[20px]">warning</span>
-      </div>
-      <p class="text-on-surface-variant font-label-md text-[13px] mb-1">Expired certifications</p>
-      <h3 class="font-headline-md text-[26px] font-semibold text-error leading-tight">{{ s.expiredCertifications }}</h3>
     </div>
   </div>
 }

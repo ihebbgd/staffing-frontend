@@ -1,45 +1,71 @@
-<main class="w-full max-w-[440px] z-10 relative flex flex-col items-center">
-  <!-- Brand -->
-  <div class="w-11 h-11 bg-primary-container rounded-[10px] flex items-center justify-center auth-logo">
-    <span class="material-symbols-outlined text-on-primary text-[22px]">dataset</span>
-  </div>
-  <h1 class="font-headline-md text-[20px] font-medium text-on-surface mt-3 tracking-tight">Staffing platform</h1>
-  <p class="font-body-md text-[13px] text-text-muted mt-1">Resource allocation and management</p>
+<div class="w-full min-h-screen flex">
+  <!-- Left: branded panel -->
+  <div class="hidden lg:flex lg:w-1/2 bg-primary relative overflow-hidden flex-col justify-between p-12">
+    <div class="absolute top-[-15%] right-[-10%] w-[50%] h-[50%] bg-tertiary/40 blur-[100px] rounded-full"></div>
+    <div class="absolute bottom-[-15%] left-[-10%] w-[45%] h-[45%] bg-accent-cyan/20 blur-[100px] rounded-full"></div>
 
-  <!-- Card -->
-  <div class="w-full max-w-[340px] bg-surface-container-lowest border border-border-subtle rounded-xl p-6 mt-6 auth-card">
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <!-- Username -->
-      <label class="block font-label-md text-[14px] font-medium text-on-surface mb-2" for="username">Username</label>
-      <div class="relative mb-4">
-        <input class="w-full h-[52px] px-4 pr-11 border border-border-subtle rounded-lg font-body-md text-[15px] text-on-surface input-focus-ring transition-soft placeholder:text-outline-variant" id="username" type="text" placeholder="your.username" formControlName="username"/>
-        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">person</span>
+    <div class="relative flex items-center gap-3">
+      <div class="w-10 h-10 bg-white/15 backdrop-blur-md rounded-xl flex items-center justify-center">
+        <span class="material-symbols-outlined text-white text-[22px]" style="font-variation-settings: 'FILL' 1;">deployed_code</span>
       </div>
+      <span class="font-headline-md text-[18px] font-semibold text-white">Staffing Platform</span>
+    </div>
 
-      <!-- Password -->
-      <label class="block font-label-md text-[14px] font-medium text-on-surface mb-2" for="password">Password</label>
-      <div class="relative mb-5">
-        <input class="w-full h-[52px] px-4 pr-11 border border-border-subtle rounded-lg font-body-md text-[15px] text-on-surface input-focus-ring transition-soft placeholder:text-outline-variant" id="password" type="password" placeholder="••••••••" formControlName="password"/>
-        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">lock</span>
+    <div class="relative">
+      <h2 class="font-headline-lg text-[34px] font-semibold text-white leading-tight">Resource allocation,<br/>made intelligent.</h2>
+      <p class="font-body-lg text-[16px] text-white/70 mt-4 max-w-md">Plan capacity, prevent over-allocation, and staff every project with the right people.</p>
+      <div class="flex items-center gap-2 mt-8">
+        <div class="w-2 h-2 rounded-full bg-accent-cyan animate-pulse"></div>
+        <span class="font-body-md text-[13px] text-white/60">Trusted internal workforce system</span>
       </div>
+    </div>
 
-      <!-- Error -->
-      @if (errorMessage()) {
-        <p class="text-error text-[13px] font-body-md mb-3">{{ errorMessage() }}</p>
-      }
-
-      <!-- Submit -->
-      <button class="w-full h-[52px] bg-primary text-on-primary font-headline-md text-[15px] font-medium rounded-lg hover:bg-tertiary transition-all duration-200 disabled:opacity-60 btn-primary" type="submit" [disabled]="loading()">
-        {{ loading() ? 'Signing in...' : 'Sign in' }}
-      </button>
-
-      <!-- Admin note -->
-      <div class="flex gap-2 bg-surface-container-low rounded-lg px-3 py-2.5 mt-4">
-        <span class="material-symbols-outlined text-primary-container text-[16px] shrink-0 mt-0.5">info</span>
-        <span class="font-body-md text-[12px] text-on-surface-variant leading-relaxed">Accounts are provisioned by your administrator. Contact them for access or a password reset.</span>
-      </div>
-    </form>
+    <div class="relative font-label-sm text-[11px] text-white/40">© 2026 Staffing Platform · internal tool</div>
   </div>
 
-  <p class="font-label-sm text-[11px] text-outline-variant mt-5">© 2026 Staffing platform · internal tool</p>
-</main>
+  <!-- Right: sign-in form -->
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-6 bg-bg-surface">
+    <div class="w-full max-w-[380px]">
+      <!-- Mobile-only brand (hidden on desktop where the panel shows it) -->
+      <div class="lg:hidden flex items-center gap-2 mb-8">
+        <div class="w-9 h-9 bg-primary-container rounded-lg flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-primary text-[20px]">deployed_code</span>
+        </div>
+        <span class="font-headline-md text-[16px] font-semibold text-on-surface">Staffing Platform</span>
+      </div>
+
+      <h1 class="font-headline-md text-[26px] font-semibold text-on-surface tracking-tight">Welcome back</h1>
+      <p class="font-body-md text-[14px] text-text-muted mt-1.5 mb-8">Sign in to your account to continue.</p>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <label class="block font-label-md text-[13px] font-medium text-on-surface mb-2" for="username">Username</label>
+        <div class="relative mb-5">
+          <input class="w-full h-[52px] px-4 pr-11 border border-border-subtle rounded-xl bg-white font-body-md text-[15px] text-on-surface input-focus-ring transition-soft placeholder:text-outline-variant" id="username" type="text" placeholder="your.username" formControlName="username"/>
+          <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">person</span>
+        </div>
+
+        <label class="block font-label-md text-[13px] font-medium text-on-surface mb-2" for="password">Password</label>
+        <div class="relative mb-6">
+          <input class="w-full h-[52px] px-4 pr-11 border border-border-subtle rounded-xl bg-white font-body-md text-[15px] text-on-surface input-focus-ring transition-soft placeholder:text-outline-variant" id="password" type="password" placeholder="••••••••" formControlName="password"/>
+          <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">lock</span>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="flex items-center gap-2 bg-error-container rounded-lg px-3 py-2.5 mb-5">
+            <span class="material-symbols-outlined text-error text-[18px]">error</span>
+            <span class="font-body-md text-[13px] text-on-error-container">{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <button class="w-full h-[52px] bg-primary text-on-primary font-headline-md text-[15px] font-medium rounded-xl hover:bg-tertiary transition-all duration-200 disabled:opacity-60 btn-primary" type="submit" [disabled]="loading()">
+          {{ loading() ? 'Signing in...' : 'Sign in' }}
+        </button>
+      </form>
+
+      <div class="flex gap-2 bg-surface-container-low rounded-xl px-4 py-3 mt-8">
+        <span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">info</span>
+        <span class="font-body-md text-[13px] text-on-surface-variant leading-relaxed">Accounts are provisioned by your administrator. Contact them for access or a password reset.</span>
+      </div>
+    </div>
+  </div>
+</div>

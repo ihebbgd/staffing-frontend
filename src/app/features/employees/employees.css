@@ -1,0 +1,36 @@
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.row-in {
+  animation: rise 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #eef1f7 25%, #f7f9fc 40%, #eef1f7 60%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.hue-indigo { background: #eef2ff; color: #3525cd; }
+.hue-teal   { background: #e1f5ee; color: #0f6e56; }
+.hue-amber  { background: #faeeda; color: #854f0b; }
+.hue-rose   { background: #fbeaf0; color: #993556; }
+.hue-violet { background: #f3e8ff; color: #6d28d9; }
+
+.search-ring {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.search-ring:focus {
+  outline: none;
+  border-color: #3525cd;
+  box-shadow: 0 0 0 3px rgba(53, 37, 205, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row-in, .skeleton { animation: none; }
+}
