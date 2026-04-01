@@ -1,0 +1,1894 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Resource Allocation & Staffing Management API",
+    "description": "JWT-secured REST API for staffing, employee skills, project allocations, certifications, notifications, and skill-based employee recommendations.",
+    "version": "1.0.0"
+  },
+  "servers": [{ "url": "http://localhost:8080", "description": "Generated server url" }],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [
+    { "name": "Skills", "description": "Catalogue of skills" },
+    {
+      "name": "Employee",
+      "description": "Employee management (ADMIN/MANAGER overview). Employees use /api/me for their own data."
+    },
+    {
+      "name": "Users",
+      "description": "Admin management of login accounts (roles, status, password reset, employee link)"
+    },
+    { "name": "Reports", "description": "Aggregation reports (JSON only)" },
+    { "name": "Recommendations", "description": "AI-style scoring of employees for a project" },
+    { "name": "Bench", "description": "Active employees with no current allocations" },
+    {
+      "name": "Me",
+      "description": "Personal dashboard for the authenticated employee (their own data only)"
+    },
+    { "name": "Allocations", "description": "Assign employees to projects and track workload" },
+    { "name": "Audit Logs", "description": "Security-relevant action history (admin only)" },
+    { "name": "Projects", "description": "Project management" },
+    { "name": "Notifications", "description": "Create and read in-app notifications" },
+    {
+      "name": "Dashboard",
+      "description": "Aggregate staffing statistics for the overview dashboard"
+    },
+    { "name": "Certification", "description": "Manage employee certifications and expiry status" },
+    {
+      "name": "Authentication",
+      "description": "Login, refresh and revoke JWT tokens. Accounts are provisioned by admins, not self-registered."
+    },
+    {
+      "name": "Employee Skills",
+      "description": "Assign skills and proficiency levels to employees"
+    }
+  ],
+  "paths": {
+    "/api/users/{id}/employee": {
+      "put": {
+        "tags": ["Users"],
+        "summary": "Link this user to an employee record",
+        "operationId": "linkEmployee",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/LinkEmployeeRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/UserResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Unlink this user from its employee record",
+        "operationId": "unlinkEmployee",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/UserResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/skills/{id}": {
+      "get": {
+        "tags": ["Skills"],
+        "summary": "Get a skill by id",
+        "operationId": "getById",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/SkillResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "put": {
+        "tags": ["Skills"],
+        "summary": "Update a skill by id",
+        "operationId": "update",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/SkillRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/SkillResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Skills"],
+        "summary": "Delete a skill by id",
+        "operationId": "delete",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/projects/{id}": {
+      "get": {
+        "tags": ["Projects"],
+        "summary": "Get one project by id",
+        "operationId": "getById_1",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/ProjectResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "put": {
+        "tags": ["Projects"],
+        "summary": "Update a project",
+        "operationId": "update_1",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ProjectRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/ProjectResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Projects"],
+        "summary": "Delete a project",
+        "operationId": "delete_1",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/notifications/{id}/read": {
+      "put": {
+        "tags": ["Notifications"],
+        "summary": "Mark a notification as read (own notifications, unless ADMIN/MANAGER)",
+        "operationId": "markAsRead",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/NotificationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/employees/{id}": {
+      "get": {
+        "tags": ["Employee"],
+        "summary": "Get employee by id",
+        "operationId": "getById_2",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/EmployeeResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "put": {
+        "tags": ["Employee"],
+        "summary": "Update an employee's HR fields (login is managed via /api/users)",
+        "operationId": "update_2",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/EmployeeUpdateRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/EmployeeResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Employee"],
+        "summary": "Delete an employee and its linked login",
+        "operationId": "delete_2",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/employee-skills/{id}": {
+      "get": {
+        "tags": ["Employee Skills"],
+        "summary": "Get one employee-skill link by id",
+        "operationId": "getById_3",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/EmployeeSkillResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "put": {
+        "tags": ["Employee Skills"],
+        "summary": "Update a proficiency level",
+        "operationId": "update_3",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/EmployeeSkillRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/EmployeeSkillResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Employee Skills"],
+        "summary": "Remove a skill from an employee",
+        "operationId": "delete_3",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/certifications/{id}": {
+      "get": {
+        "tags": ["Certification"],
+        "summary": "Get one certification by id",
+        "operationId": "getById_4",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CertificationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "put": {
+        "tags": ["Certification"],
+        "summary": "Update a certification",
+        "operationId": "update_4",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CertificationRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CertificationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Certification"],
+        "summary": "Delete a certification",
+        "operationId": "delete_4",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/allocations/{id}": {
+      "get": {
+        "tags": ["Allocations"],
+        "summary": "Get one allocation by id",
+        "operationId": "getById_5",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/AllocationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "put": {
+        "tags": ["Allocations"],
+        "summary": "Update an allocation",
+        "operationId": "update_5",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/AllocationRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/AllocationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Allocations"],
+        "summary": "Delete an allocation",
+        "operationId": "delete_5",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "List a page of users",
+        "operationId": "getAll",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/PageUserResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Users"],
+        "summary": "Create a new login account (returns a generated temporary password)",
+        "operationId": "create",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/CreateUserRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CreateUserResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/users/{id}/reset-password": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Reset a user's password to a new temporary one (revokes active tokens)",
+        "operationId": "resetPassword",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/PasswordResetResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/skills": {
+      "get": {
+        "tags": ["Skills"],
+        "summary": "Get a page of skills",
+        "operationId": "getAll_1",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/PageSkillResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Skills"],
+        "summary": "Create a new skill",
+        "operationId": "create_1",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/SkillRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/SkillResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/projects": {
+      "get": {
+        "tags": ["Projects"],
+        "summary": "List a page of projects",
+        "operationId": "getAll_2",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/PageProjectResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Projects"],
+        "summary": "Create a project",
+        "operationId": "create_2",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ProjectRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/ProjectResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/notifications": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "Get a page of all notifications",
+        "operationId": "getAll_3",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/PageNotificationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Notifications"],
+        "summary": "Create a new notification",
+        "operationId": "create_3",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/NotificationRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/NotificationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/employees": {
+      "get": {
+        "tags": ["Employee"],
+        "summary": "Get a page of employees",
+        "operationId": "getAll_4",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/PageEmployeeResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Employee"],
+        "summary": "Create an employee and provision their linked login (returns the temporary password once)",
+        "operationId": "create_4",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/EmployeeCreateRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/EmployeeCreationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/employee-skills": {
+      "get": {
+        "tags": ["Employee Skills"],
+        "summary": "List a page of employee-skill links",
+        "operationId": "getAll_5",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/PageEmployeeSkillResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Employee Skills"],
+        "summary": "Assign a skill to an employee",
+        "operationId": "create_5",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/EmployeeSkillRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/EmployeeSkillResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/certifications": {
+      "get": {
+        "tags": ["Certification"],
+        "summary": "List a page of certifications",
+        "operationId": "getAll_6",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/PageCertificationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Certification"],
+        "summary": "Create a certification",
+        "operationId": "create_6",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CertificationRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CertificationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Exchange a valid refresh token for a new access + refresh token pair",
+        "operationId": "refresh",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/RefreshRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/AuthResponse" } } }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Invalidate all tokens previously issued to the authenticated user",
+        "operationId": "logout",
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Login and receive access + refresh tokens",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/AuthResponse" } } }
+          }
+        }
+      }
+    },
+    "/api/allocations": {
+      "get": {
+        "tags": ["Allocations"],
+        "summary": "List a page of allocations",
+        "operationId": "getAll_7",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/PageAllocationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Allocations"],
+        "summary": "Create an allocation (assign an employee to a project)",
+        "operationId": "create_7",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/AllocationRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/AllocationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/users/{id}/status": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Enable or disable a user (disabling revokes their active tokens)",
+        "operationId": "setStatus",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/StatusUpdateRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/UserResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/users/{id}/role": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Change a user's role",
+        "operationId": "changeRole",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/RoleUpdateRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/UserResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get a user by id",
+        "operationId": "getById_6",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/UserResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Delete a user (unlinks any employee first)",
+        "operationId": "delete_6",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/reports/utilization": {
+      "get": {
+        "tags": ["Reports"],
+        "summary": "Per-employee utilization summary with status buckets",
+        "operationId": "utilization",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/UtilizationReportRow" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/reports/certifications": {
+      "get": {
+        "tags": ["Reports"],
+        "summary": "Certification counts and lists grouped by status",
+        "operationId": "certifications",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CertificationReport" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/recommendations/project/{projectId}": {
+      "get": {
+        "tags": ["Recommendations"],
+        "summary": "Get the top-N recommended employees for a project, with score breakdown",
+        "operationId": "recommendForProject",
+        "parameters": [
+          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "topN",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 5 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/RecommendationResult" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/notifications/{id}": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "Get one notification by id (own notifications, unless ADMIN/MANAGER)",
+        "operationId": "getById_7",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/NotificationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Notifications"],
+        "summary": "Delete a notification by id",
+        "operationId": "delete_7",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/notifications/recipient/{recipientId}": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "List a page of notifications for a given recipient (own, unless ADMIN/MANAGER)",
+        "operationId": "getByRecipient",
+        "parameters": [
+          { "name": "recipientId", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/PageNotificationResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/me": {
+      "get": {
+        "tags": ["Me"],
+        "summary": "My employee profile",
+        "operationId": "profile",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/EmployeeResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/me/workload": {
+      "get": {
+        "tags": ["Me"],
+        "summary": "My current workload / utilization",
+        "operationId": "workload",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/WorkloadResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/me/teammates": {
+      "get": {
+        "tags": ["Me"],
+        "summary": "People currently working on the same projects as me",
+        "operationId": "teammates",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/EmployeeResponse" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/me/skills": {
+      "get": {
+        "tags": ["Me"],
+        "summary": "My skills",
+        "operationId": "skills",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/EmployeeSkillResponse" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/me/projects": {
+      "get": {
+        "tags": ["Me"],
+        "summary": "Projects I am allocated to",
+        "operationId": "projects",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ProjectResponse" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/me/certifications": {
+      "get": {
+        "tags": ["Me"],
+        "summary": "My certifications",
+        "operationId": "certifications_1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/CertificationResponse" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/me/allocations": {
+      "get": {
+        "tags": ["Me"],
+        "summary": "My allocations",
+        "operationId": "allocations",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/AllocationResponse" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/employee-skills/employee/{employeeId}": {
+      "get": {
+        "tags": ["Employee Skills"],
+        "summary": "List all skills for one employee (employees use /api/me/skills)",
+        "operationId": "getByEmployee",
+        "parameters": [
+          { "name": "employeeId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/EmployeeSkillResponse" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/dashboard/stats": {
+      "get": {
+        "tags": ["Dashboard"],
+        "summary": "Aggregate staffing statistics (counts, utilization, certification expiry buckets)",
+        "operationId": "stats",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/StatsResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/certifications/employee/{employeeId}": {
+      "get": {
+        "tags": ["Certification"],
+        "summary": "List all certifications for a given employee (employees use /api/me/certifications)",
+        "operationId": "getByEmployee_1",
+        "parameters": [
+          { "name": "employeeId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/CertificationResponse" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/bench": {
+      "get": {
+        "tags": ["Bench"],
+        "summary": "List bench employees (active employees with no active allocations)",
+        "operationId": "getBench",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/EmployeeResponse" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/audit-logs": {
+      "get": {
+        "tags": ["Audit Logs"],
+        "summary": "List audit log entries, newest first",
+        "operationId": "getAll_8",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/PageAuditLogResponse" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/allocations/workload/{employeeId}": {
+      "get": {
+        "tags": ["Allocations"],
+        "summary": "Get an employee's current workload / utilization (employees use /api/me/workload)",
+        "operationId": "getWorkload",
+        "parameters": [
+          { "name": "employeeId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/WorkloadResponse" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/allocations/employee/{employeeId}": {
+      "get": {
+        "tags": ["Allocations"],
+        "summary": "List all allocations for a given employee (employees use /api/me/allocations)",
+        "operationId": "getByEmployee_2",
+        "parameters": [
+          { "name": "employeeId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/AllocationResponse" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/allocations/conflicts": {
+      "get": {
+        "tags": ["Allocations"],
+        "summary": "List every employee whose active allocations exceed 100% capacity",
+        "operationId": "getConflicts",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/WorkloadResponse" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LinkEmployeeRequest": {
+        "type": "object",
+        "properties": { "employeeId": { "type": "string", "minLength": 1 } },
+        "required": ["employeeId"]
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "username": { "type": "string" },
+          "email": { "type": "string" },
+          "role": { "type": "string", "enum": ["EMPLOYEE", "MANAGER", "ADMIN"] },
+          "enabled": { "type": "boolean" },
+          "employeeId": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "SkillRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "category": { "type": "string" },
+          "description": { "type": "string" }
+        },
+        "required": ["name"]
+      },
+      "SkillResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "category": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "ProjectRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "description": { "type": "string" },
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "status": {
+            "type": "string",
+            "enum": ["PLANNED", "ACTIVE", "ON_HOLD", "COMPLETED", "CANCELLED"]
+          },
+          "requiredSkillIds": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["name"]
+      },
+      "ProjectResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "status": {
+            "type": "string",
+            "enum": ["PLANNED", "ACTIVE", "ON_HOLD", "COMPLETED", "CANCELLED"]
+          },
+          "requiredSkillIds": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "NotificationResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "recipientId": { "type": "string" },
+          "title": { "type": "string" },
+          "message": { "type": "string" },
+          "type": { "type": "string" },
+          "read": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "EmployeeUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": { "type": "string", "minLength": 1 },
+          "lastName": { "type": "string", "minLength": 1 },
+          "email": { "type": "string", "format": "email", "minLength": 1 },
+          "jobTitle": { "type": "string" },
+          "department": { "type": "string" },
+          "weeklyCapacityHours": { "type": "number", "format": "double" },
+          "yearsOfExperience": { "type": "number", "format": "double" },
+          "active": { "type": "boolean" }
+        },
+        "required": ["email", "firstName", "lastName"]
+      },
+      "EmployeeResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "userId": { "type": "string" },
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "email": { "type": "string" },
+          "jobTitle": { "type": "string" },
+          "department": { "type": "string" },
+          "weeklyCapacityHours": { "type": "number", "format": "double" },
+          "yearsOfExperience": { "type": "number", "format": "double" },
+          "active": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "EmployeeSkillRequest": {
+        "type": "object",
+        "properties": {
+          "employeeId": { "type": "string", "minLength": 1 },
+          "skillId": { "type": "string", "minLength": 1 },
+          "proficiencyLevel": { "type": "integer", "format": "int32", "maximum": 5, "minimum": 1 }
+        },
+        "required": ["employeeId", "skillId"]
+      },
+      "EmployeeSkillResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "employeeId": { "type": "string" },
+          "skillId": { "type": "string" },
+          "proficiencyLevel": { "type": "integer", "format": "int32" }
+        }
+      },
+      "CertificationRequest": {
+        "type": "object",
+        "properties": {
+          "employeeId": { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1 },
+          "issuingOrganization": { "type": "string" },
+          "skillId": { "type": "string" },
+          "issueDate": { "type": "string", "format": "date" },
+          "expiryDate": { "type": "string", "format": "date" },
+          "credentialId": { "type": "string" }
+        },
+        "required": ["employeeId", "name"]
+      },
+      "CertificationResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "employeeId": { "type": "string" },
+          "name": { "type": "string" },
+          "issuingOrganization": { "type": "string" },
+          "skillId": { "type": "string" },
+          "issueDate": { "type": "string", "format": "date" },
+          "expiryDate": { "type": "string", "format": "date" },
+          "status": { "type": "string", "enum": ["ACTIVE", "EXPIRING_SOON", "EXPIRED"] },
+          "credentialId": { "type": "string" }
+        }
+      },
+      "AllocationRequest": {
+        "type": "object",
+        "properties": {
+          "employeeId": { "type": "string", "minLength": 1 },
+          "projectId": { "type": "string", "minLength": 1 },
+          "allocatedHoursPerWeek": { "type": "number", "format": "double" },
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "status": { "type": "string", "enum": ["ACTIVE", "COMPLETED", "CANCELLED"] },
+          "roleOnProject": { "type": "string" },
+          "dateRangeValid": { "type": "boolean" }
+        },
+        "required": ["employeeId", "projectId"]
+      },
+      "AllocationResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "employeeId": { "type": "string" },
+          "projectId": { "type": "string" },
+          "allocatedHoursPerWeek": { "type": "number", "format": "double" },
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "status": { "type": "string", "enum": ["ACTIVE", "COMPLETED", "CANCELLED"] },
+          "roleOnProject": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "overAllocationWarning": { "type": "boolean" },
+          "employeeUtilizationPercent": { "type": "number", "format": "double" }
+        }
+      },
+      "CreateUserRequest": {
+        "type": "object",
+        "properties": {
+          "username": { "type": "string", "minLength": 1 },
+          "email": { "type": "string", "format": "email", "minLength": 1 },
+          "role": { "type": "string", "enum": ["EMPLOYEE", "MANAGER", "ADMIN"] }
+        },
+        "required": ["email", "role", "username"]
+      },
+      "CreateUserResponse": {
+        "type": "object",
+        "properties": {
+          "user": { "$ref": "#/components/schemas/UserResponse" },
+          "temporaryPassword": { "type": "string" }
+        }
+      },
+      "PasswordResetResponse": {
+        "type": "object",
+        "properties": { "temporaryPassword": { "type": "string" } }
+      },
+      "NotificationRequest": {
+        "type": "object",
+        "properties": {
+          "recipientId": { "type": "string" },
+          "title": { "type": "string", "minLength": 1 },
+          "message": { "type": "string" },
+          "type": { "type": "string" }
+        },
+        "required": ["title"]
+      },
+      "EmployeeCreateRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": { "type": "string", "minLength": 1 },
+          "lastName": { "type": "string", "minLength": 1 },
+          "email": { "type": "string", "format": "email", "minLength": 1 },
+          "jobTitle": { "type": "string" },
+          "department": { "type": "string" },
+          "weeklyCapacityHours": { "type": "number", "format": "double" },
+          "yearsOfExperience": { "type": "number", "format": "double" },
+          "active": { "type": "boolean" },
+          "username": { "type": "string" },
+          "password": { "type": "string" },
+          "role": { "type": "string", "enum": ["EMPLOYEE", "MANAGER", "ADMIN"] }
+        },
+        "required": ["email", "firstName", "lastName"]
+      },
+      "EmployeeCreationResponse": {
+        "type": "object",
+        "properties": {
+          "employee": { "$ref": "#/components/schemas/EmployeeResponse" },
+          "username": { "type": "string" },
+          "temporaryPassword": { "type": "string" }
+        }
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "properties": { "refreshToken": { "type": "string", "minLength": 1 } },
+        "required": ["refreshToken"]
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": { "type": "string" },
+          "refreshToken": { "type": "string" },
+          "username": { "type": "string" },
+          "role": { "type": "string", "enum": ["EMPLOYEE", "MANAGER", "ADMIN"] }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "username": { "type": "string", "minLength": 1 },
+          "password": { "type": "string", "minLength": 1 }
+        },
+        "required": ["password", "username"]
+      },
+      "StatusUpdateRequest": {
+        "type": "object",
+        "properties": { "enabled": { "type": "boolean" } },
+        "required": ["enabled"]
+      },
+      "RoleUpdateRequest": {
+        "type": "object",
+        "properties": { "role": { "type": "string", "enum": ["EMPLOYEE", "MANAGER", "ADMIN"] } },
+        "required": ["role"]
+      },
+      "Pageable": {
+        "type": "object",
+        "properties": {
+          "page": { "type": "integer", "format": "int32", "minimum": 0 },
+          "size": { "type": "integer", "format": "int32", "minimum": 1 },
+          "sort": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "PageUserResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "content": { "type": "array", "items": { "$ref": "#/components/schemas/UserResponse" } },
+          "number": { "type": "integer", "format": "int32" },
+          "sort": { "$ref": "#/components/schemas/SortObject" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" },
+          "numberOfElements": { "type": "integer", "format": "int32" },
+          "pageable": { "$ref": "#/components/schemas/PageableObject" },
+          "empty": { "type": "boolean" }
+        }
+      },
+      "PageableObject": {
+        "type": "object",
+        "properties": {
+          "offset": { "type": "integer", "format": "int64" },
+          "sort": { "$ref": "#/components/schemas/SortObject" },
+          "paged": { "type": "boolean" },
+          "pageSize": { "type": "integer", "format": "int32" },
+          "pageNumber": { "type": "integer", "format": "int32" },
+          "unpaged": { "type": "boolean" }
+        }
+      },
+      "SortObject": {
+        "type": "object",
+        "properties": {
+          "empty": { "type": "boolean" },
+          "sorted": { "type": "boolean" },
+          "unsorted": { "type": "boolean" }
+        }
+      },
+      "PageSkillResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "content": { "type": "array", "items": { "$ref": "#/components/schemas/SkillResponse" } },
+          "number": { "type": "integer", "format": "int32" },
+          "sort": { "$ref": "#/components/schemas/SortObject" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" },
+          "numberOfElements": { "type": "integer", "format": "int32" },
+          "pageable": { "$ref": "#/components/schemas/PageableObject" },
+          "empty": { "type": "boolean" }
+        }
+      },
+      "UtilizationReportRow": {
+        "type": "object",
+        "properties": {
+          "employeeId": { "type": "string" },
+          "employeeName": { "type": "string" },
+          "weeklyCapacityHours": { "type": "number", "format": "double" },
+          "allocatedHours": { "type": "number", "format": "double" },
+          "utilizationPercent": { "type": "number", "format": "double" },
+          "status": {
+            "type": "string",
+            "enum": ["AVAILABLE", "PARTIALLY_ALLOCATED", "FULLY_ALLOCATED", "OVERALLOCATED"]
+          }
+        }
+      },
+      "CertificationReport": {
+        "type": "object",
+        "properties": {
+          "activeCount": { "type": "integer", "format": "int64" },
+          "expiringSoonCount": { "type": "integer", "format": "int64" },
+          "expiredCount": { "type": "integer", "format": "int64" },
+          "active": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CertificationResponse" }
+          },
+          "expiringSoon": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CertificationResponse" }
+          },
+          "expired": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CertificationResponse" }
+          }
+        }
+      },
+      "FactorBreakdown": {
+        "type": "object",
+        "properties": {
+          "skillMatch": { "type": "number", "format": "double" },
+          "skillLevel": { "type": "number", "format": "double" },
+          "availability": { "type": "number", "format": "double" },
+          "certScore": { "type": "number", "format": "double" },
+          "experience": { "type": "number", "format": "double" },
+          "skillMatchContribution": { "type": "number", "format": "double" },
+          "skillLevelContribution": { "type": "number", "format": "double" },
+          "availabilityContribution": { "type": "number", "format": "double" },
+          "certScoreContribution": { "type": "number", "format": "double" },
+          "experienceContribution": { "type": "number", "format": "double" },
+          "matchedSkillCount": { "type": "integer", "format": "int32" },
+          "requiredSkillCount": { "type": "integer", "format": "int32" }
+        }
+      },
+      "RecommendationResult": {
+        "type": "object",
+        "properties": {
+          "employeeId": { "type": "string" },
+          "employeeName": { "type": "string" },
+          "jobTitle": { "type": "string" },
+          "totalScore": { "type": "number", "format": "double" },
+          "breakdown": { "$ref": "#/components/schemas/FactorBreakdown" }
+        }
+      },
+      "PageProjectResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProjectResponse" }
+          },
+          "number": { "type": "integer", "format": "int32" },
+          "sort": { "$ref": "#/components/schemas/SortObject" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" },
+          "numberOfElements": { "type": "integer", "format": "int32" },
+          "pageable": { "$ref": "#/components/schemas/PageableObject" },
+          "empty": { "type": "boolean" }
+        }
+      },
+      "PageNotificationResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/NotificationResponse" }
+          },
+          "number": { "type": "integer", "format": "int32" },
+          "sort": { "$ref": "#/components/schemas/SortObject" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" },
+          "numberOfElements": { "type": "integer", "format": "int32" },
+          "pageable": { "$ref": "#/components/schemas/PageableObject" },
+          "empty": { "type": "boolean" }
+        }
+      },
+      "WorkloadResponse": {
+        "type": "object",
+        "properties": {
+          "employeeId": { "type": "string" },
+          "employeeName": { "type": "string" },
+          "weeklyCapacityHours": { "type": "number", "format": "double" },
+          "totalAllocatedHours": { "type": "number", "format": "double" },
+          "utilizationPercent": { "type": "number", "format": "double" },
+          "overAllocated": { "type": "boolean" }
+        }
+      },
+      "PageEmployeeResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/EmployeeResponse" }
+          },
+          "number": { "type": "integer", "format": "int32" },
+          "sort": { "$ref": "#/components/schemas/SortObject" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" },
+          "numberOfElements": { "type": "integer", "format": "int32" },
+          "pageable": { "$ref": "#/components/schemas/PageableObject" },
+          "empty": { "type": "boolean" }
+        }
+      },
+      "PageEmployeeSkillResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/EmployeeSkillResponse" }
+          },
+          "number": { "type": "integer", "format": "int32" },
+          "sort": { "$ref": "#/components/schemas/SortObject" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" },
+          "numberOfElements": { "type": "integer", "format": "int32" },
+          "pageable": { "$ref": "#/components/schemas/PageableObject" },
+          "empty": { "type": "boolean" }
+        }
+      },
+      "StatsResponse": {
+        "type": "object",
+        "properties": {
+          "totalEmployees": { "type": "integer", "format": "int64" },
+          "activeEmployees": { "type": "integer", "format": "int64" },
+          "benchCount": { "type": "integer", "format": "int64" },
+          "benchPercentage": { "type": "number", "format": "double" },
+          "allocatedEmployees": { "type": "integer", "format": "int64" },
+          "activeProjects": { "type": "integer", "format": "int64" },
+          "averageUtilizationPercent": { "type": "number", "format": "double" },
+          "allocationRate": { "type": "number", "format": "double" },
+          "certificationsExpiringIn30Days": { "type": "integer", "format": "int64" },
+          "certificationsExpiringIn60Days": { "type": "integer", "format": "int64" },
+          "expiredCertifications": { "type": "integer", "format": "int64" }
+        }
+      },
+      "PageCertificationResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CertificationResponse" }
+          },
+          "number": { "type": "integer", "format": "int32" },
+          "sort": { "$ref": "#/components/schemas/SortObject" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" },
+          "numberOfElements": { "type": "integer", "format": "int32" },
+          "pageable": { "$ref": "#/components/schemas/PageableObject" },
+          "empty": { "type": "boolean" }
+        }
+      },
+      "AuditLogResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "username": { "type": "string" },
+          "action": { "type": "string" },
+          "targetType": { "type": "string" },
+          "targetId": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "details": { "type": "string" }
+        }
+      },
+      "PageAuditLogResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AuditLogResponse" }
+          },
+          "number": { "type": "integer", "format": "int32" },
+          "sort": { "$ref": "#/components/schemas/SortObject" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" },
+          "numberOfElements": { "type": "integer", "format": "int32" },
+          "pageable": { "$ref": "#/components/schemas/PageableObject" },
+          "empty": { "type": "boolean" }
+        }
+      },
+      "PageAllocationResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AllocationResponse" }
+          },
+          "number": { "type": "integer", "format": "int32" },
+          "sort": { "$ref": "#/components/schemas/SortObject" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" },
+          "numberOfElements": { "type": "integer", "format": "int32" },
+          "pageable": { "$ref": "#/components/schemas/PageableObject" },
+          "empty": { "type": "boolean" }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "name": "bearerAuth",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
