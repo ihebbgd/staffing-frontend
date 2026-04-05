@@ -1,15 +1,11 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { SessionService } from '../services/session.service';
 
-export const authGuard: CanActivateFn = (route, state) => {
+/** Blocks a route unless an authenticated session exists. */
+export const authGuard: CanActivateFn = () => {
+  const session = inject(SessionService);
   const router = inject(Router);
-  const token = localStorage.getItem('accessToken');
 
-  // if a token exists, allow access
-  if (token) {
-    return true;
-  }
-
-  // otherwise, redirect to login and block the route
-  return router.createUrlTree(['/login']);
+  return session.isAuthenticated() ? true : router.createUrlTree(['/login']);
 };
