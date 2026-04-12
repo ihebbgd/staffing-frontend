@@ -1,0 +1,143 @@
+<div class="flex items-end justify-between mb-5">
+  <div>
+    <h2 class="font-headline-lg text-[24px] font-semibold text-on-surface">Projects</h2>
+    <p class="text-on-surface-variant font-body-md text-[13px] mt-1">{{ totalElements() }} projects</p>
+  </div>
+  <button (click)="openCreate()" class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl font-label-md text-[13px] hover:opacity-90 active:scale-95 transition-all">
+    <span class="material-symbols-outlined text-[18px]">add</span> New project
+  </button>
+</div>
+
+<div class="relative flex-1 max-w-sm mb-4">
+  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-[18px]">search</span>
+  <input (input)="onSearch($event)" class="w-full h-10 pl-10 pr-4 bg-white border border-border-subtle rounded-xl font-body-md text-[13px] text-on-surface search-ring placeholder:text-outline-variant" placeholder="Filter by name, status, description" type="text"/>
+</div>
+
+@if (loading()) {
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    @for (i of [1,2,3,4,5,6]; track i) { <div class="h-[150px] rounded-2xl skeleton"></div> }
+  </div>
+} @else if (error()) {
+  <p class="font-body-md text-error">Couldn't load projects. Is the backend running?</p>
+} @else {
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    @for (project of filtered(); track project.id; let i = $index) {
+      <div class="group bg-white border border-border-subtle rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow row-in" [style.animation-delay.ms]="i * 40">
+        <div class="flex items-start justify-between gap-2">
+          <h3 class="text-[15px] font-semibold text-on-surface leading-snug">{{ project.name }}</h3>
+          @if (project.status) {
+            <span class="text-[11px] px-2.5 py-1 rounded-full shrink-0" [class]="statusClass(project.status)">{{ project.status }}</span>
+          }
+        </div>
+        <p class="text-[12px] text-on-surface-variant mt-2 line-clamp-2 min-h-[32px]">{{ project.description || 'No description.' }}</p>
+
+        <div class="flex items-center gap-3 mt-3 text-[11px] text-text-muted">
+          @if (project.startDate) { <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">event</span>{{ project.startDate }}</span> }
+          @if (project.endDate) { <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">event_available</span>{{ project.endDate }}</span> }
+        </div>
+
+        @if (project.requiredSkillIds?.length) {
+          <div class="flex flex-wrap gap-1.5 mt-3">
+            @for (id of project.requiredSkillIds; track id) {
+              <span class="text-[10px] bg-surface-container-low text-on-surface-variant px-2 py-0.5 rounded-full">{{ skillLabel(id) }}</span>
+            }
+          </div>
+        }
+
+        <div class="flex gap-1 justify-end mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button (click)="openEdit(project)" aria-label="Edit project" class="p-1.5 rounded-lg hover:bg-surface-container-low text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-[17px] block">edit</span></button>
+          <button (click)="confirmDelete(project)" aria-label="Delete project" class="p-1.5 rounded-lg hover:bg-surface-container-low text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-[17px] block">delete</span></button>
+        </div>
+      </div>
+    } @empty {
+      <div class="col-span-full py-12 text-center">
+        <span class="material-symbols-outlined text-[34px] text-outline-variant">work_off</span>
+        <p class="text-[13px] text-on-surface-variant mt-2">
+          @if (searchTerm()) { No matches on this page. } @else { No projects yet. }
+        </p>
+      </div>
+    }
+  </div>
+
+  <app-paginator [page]="page()" [totalPages]="totalPages()" [totalElements]="totalElements()" (prev)="prev()" (next)="next()" />
+}
+
+@if (editing() !== null) {
+  <div class="modal-overlay" (click)="closeForm()">
+    <div role="dialog" aria-modal="true" class="modal-card bg-white rounded-2xl p-6 w-full max-w-[520px]" (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="font-headline-md text-[18px] font-semibold text-on-surface">{{ isEditing() ? 'Edit project' : 'New project' }}</h3>
+        <button (click)="closeForm()" aria-label="Close" class="text-outline hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px] block">close</span></button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+        <div>
+          <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="p-name">Name <span class="text-error">*</span></label>
+          <input id="p-name" formControlName="name" type="text" placeholder="Project name" class="w-full h-11 px-3.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring"/>
+          @if (form.controls.name.touched && form.controls.name.invalid) {
+            <p class="text-[12px] text-error mt-1">A name is required.</p>
+          }
+        </div>
+
+        <div>
+          <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="p-desc">Description</label>
+          <textarea id="p-desc" formControlName="description" rows="2" class="w-full px-3.5 py-2.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring resize-none"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="p-start">Start date</label>
+            <input id="p-start" formControlName="startDate" type="date" class="w-full h-11 px-3.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring"/>
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="p-end">End date</label>
+            <input id="p-end" formControlName="endDate" type="date" class="w-full h-11 px-3.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring"/>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="p-status">Status</label>
+          <select id="p-status" formControlName="status" class="w-full h-11 px-3.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring">
+            <option value="">— none —</option>
+            @for (s of statuses; track s) { <option [value]="s">{{ s }}</option> }
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[13px] font-medium text-on-surface mb-1.5">Required skills</label>
+          @if (skills().length) {
+            <div class="flex flex-wrap gap-1.5 max-h-[120px] overflow-y-auto p-1">
+              @for (skill of skills(); track skill.id) {
+                <button type="button" (click)="toggleSkill(skill.id)"
+                        class="text-[12px] px-2.5 py-1 rounded-full border transition-colors"
+                        [class]="selectedSkillIds().has(skill.id) ? 'bg-primary text-white border-primary' : 'bg-white text-on-surface-variant border-border-subtle hover:bg-surface-container-low'">
+                  {{ skill.name }}
+                </button>
+              }
+            </div>
+          } @else {
+            <p class="text-[12px] text-text-muted">No skills in the catalogue yet.</p>
+          }
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" (click)="closeForm()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">Cancel</button>
+          <button type="submit" [disabled]="saving()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-white bg-primary hover:opacity-90 transition-all disabled:opacity-60">
+            {{ saving() ? 'Saving…' : (isEditing() ? 'Save changes' : 'Create project') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+@if (deleteTarget(); as target) {
+  <app-confirm-dialog
+    title="Delete project"
+    [message]="'Delete ' + target.name + '? Allocations referencing it may be affected.'"
+    confirmLabel="Delete"
+    [busy]="deleting()"
+    (confirm)="doDelete()"
+    (cancel)="cancelDelete()"
+  />
+}

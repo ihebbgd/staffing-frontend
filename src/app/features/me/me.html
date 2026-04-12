@@ -1,0 +1,125 @@
+@if (loading()) {
+  <div class="space-y-4">
+    <div class="h-[120px] rounded-2xl skeleton"></div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="h-[200px] rounded-2xl skeleton"></div>
+      <div class="h-[200px] rounded-2xl skeleton"></div>
+    </div>
+  </div>
+} @else if (error()) {
+  <p class="font-body-md text-error">Couldn't load your profile. Is the backend running?</p>
+} @else if (profile(); as me) {
+
+  <!-- Profile header -->
+  <div class="bg-primary text-white rounded-2xl p-6 relative overflow-hidden mb-4">
+    <div class="absolute top-[-30%] right-[-10%] w-[40%] h-[80%] bg-tertiary/40 blur-[70px] rounded-full"></div>
+    <div class="relative flex items-center gap-4">
+      <div class="w-14 h-14 rounded-full bg-white/15 backdrop-blur flex items-center justify-center font-headline-md text-[18px] font-semibold">
+        {{ initials(me.firstName, me.lastName) }}
+      </div>
+      <div>
+        <h2 class="font-headline-lg text-[24px] font-semibold">{{ me.firstName }} {{ me.lastName }}</h2>
+        <p class="text-white/70 text-[13px] mt-0.5">{{ me.jobTitle || '—' }} @if (me.department) { · {{ me.department }} }</p>
+      </div>
+      <div class="ml-auto text-right hidden sm:block">
+        <div class="text-[12px] text-white/60">{{ me.email }}</div>
+        <div class="text-[12px] text-white/60 mt-1">{{ me.yearsOfExperience }} yrs experience</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <!-- Workload -->
+    <div class="bg-white border border-border-subtle rounded-2xl p-5">
+      <h4 class="font-headline-md text-[15px] font-medium text-on-surface mb-3">My workload</h4>
+      @if (workload(); as w) {
+        <div class="flex items-end justify-between">
+          <div>
+            <div class="font-headline-lg text-[30px] font-semibold" [class]="w.overAllocated ? 'text-error' : 'text-primary'">{{ w.utilizationPercent | number:'1.0-0' }}%</div>
+            <div class="text-[12px] text-text-muted">{{ w.totalAllocatedHours }} / {{ w.weeklyCapacityHours }}h per week</div>
+          </div>
+          @if (w.overAllocated) {
+            <span class="text-[11px] bg-error-container text-error px-2.5 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">warning</span>Over</span>
+          }
+        </div>
+        <div class="h-2 bg-surface-container-low rounded-full mt-3 overflow-hidden">
+          <div class="h-2 rounded-full bar" [class]="w.overAllocated ? 'bg-error' : 'bg-primary'" [style.width.%]="utilizationWidth()"></div>
+        </div>
+      } @else {
+        <p class="text-[13px] text-text-muted">No workload data.</p>
+      }
+    </div>
+
+    <!-- Projects -->
+    <div class="bg-white border border-border-subtle rounded-2xl p-5">
+      <h4 class="font-headline-md text-[15px] font-medium text-on-surface mb-3">My projects</h4>
+      @for (p of projects(); track p.id) {
+        <div class="flex items-center justify-between py-1.5 border-b border-border-subtle last:border-0">
+          <span class="text-[13px] text-on-surface truncate">{{ p.name }}</span>
+          @if (p.status) { <span class="text-[11px] text-text-muted">{{ p.status }}</span> }
+        </div>
+      } @empty {
+        <p class="text-[13px] text-text-muted">Not allocated to any projects.</p>
+      }
+    </div>
+
+    <!-- Certifications -->
+    <div class="bg-white border border-border-subtle rounded-2xl p-5">
+      <h4 class="font-headline-md text-[15px] font-medium text-on-surface mb-3">My certifications</h4>
+      @for (c of certifications(); track c.id) {
+        <div class="flex items-center justify-between py-1.5 border-b border-border-subtle last:border-0">
+          <span class="text-[13px] text-on-surface truncate">{{ c.name }}</span>
+          @if (c.status) { <span class="text-[10px] px-2 py-0.5 rounded-full" [class]="certClass(c.status)">{{ c.status.replace('_', ' ') }}</span> }
+        </div>
+      } @empty {
+        <p class="text-[13px] text-text-muted">No certifications on file.</p>
+      }
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+    <!-- Skills -->
+    <div class="bg-white border border-border-subtle rounded-2xl p-5">
+      <h4 class="font-headline-md text-[15px] font-medium text-on-surface mb-3">My skills</h4>
+      @for (s of skills(); track s.id) {
+        <div class="flex items-center justify-between py-1.5">
+          <span class="text-[13px] text-on-surface-variant">Proficiency</span>
+          <div class="flex gap-0.5">
+            @for (star of stars(s.proficiencyLevel); track $index) {
+              <span class="material-symbols-outlined text-[15px] text-amber-400" style="font-variation-settings:'FILL' 1;">star</span>
+            }
+            @if (!s.proficiencyLevel) { <span class="text-[12px] text-text-muted">—</span> }
+          </div>
+        </div>
+      } @empty {
+        <p class="text-[13px] text-text-muted">No skills recorded.</p>
+      }
+    </div>
+
+    <!-- Allocations -->
+    <div class="bg-white border border-border-subtle rounded-2xl p-5">
+      <h4 class="font-headline-md text-[15px] font-medium text-on-surface mb-3">My allocations</h4>
+      @for (a of allocations(); track a.id) {
+        <div class="flex items-center justify-between py-1.5 border-b border-border-subtle last:border-0">
+          <span class="text-[13px] text-on-surface truncate">{{ a.roleOnProject || 'Contributor' }}</span>
+          <span class="text-[12px] text-text-muted">{{ a.allocatedHoursPerWeek ?? '—' }}h/wk</span>
+        </div>
+      } @empty {
+        <p class="text-[13px] text-text-muted">No active allocations.</p>
+      }
+    </div>
+
+    <!-- Teammates -->
+    <div class="bg-white border border-border-subtle rounded-2xl p-5">
+      <h4 class="font-headline-md text-[15px] font-medium text-on-surface mb-3">Teammates</h4>
+      @for (t of teammates(); track t.id) {
+        <div class="flex items-center gap-2.5 py-1.5">
+          <div class="w-7 h-7 rounded-full hue-indigo font-label-md text-[10px] font-medium flex items-center justify-center">{{ initials(t.firstName, t.lastName) }}</div>
+          <span class="text-[13px] text-on-surface truncate">{{ t.firstName }} {{ t.lastName }}</span>
+        </div>
+      } @empty {
+        <p class="text-[13px] text-text-muted">No shared-project teammates.</p>
+      }
+    </div>
+  </div>
+}

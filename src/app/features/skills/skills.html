@@ -1,0 +1,108 @@
+<div class="flex items-end justify-between mb-5">
+  <div>
+    <h2 class="font-headline-lg text-[24px] font-semibold text-on-surface">Skills</h2>
+    <p class="text-on-surface-variant font-body-md text-[13px] mt-1">{{ totalElements() }} skills in the catalogue</p>
+  </div>
+  <button (click)="openCreate()" class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl font-label-md text-[13px] hover:opacity-90 active:scale-95 transition-all">
+    <span class="material-symbols-outlined text-[18px]">add</span> New skill
+  </button>
+</div>
+
+<div class="relative flex-1 max-w-sm mb-4">
+  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-[18px]">search</span>
+  <input (input)="onSearch($event)" class="w-full h-10 pl-10 pr-4 bg-white border border-border-subtle rounded-xl font-body-md text-[13px] text-on-surface search-ring placeholder:text-outline-variant" placeholder="Filter by name, category, description" type="text"/>
+</div>
+
+@if (loading()) {
+  <div class="bg-white border border-border-subtle rounded-2xl overflow-hidden">
+    @for (i of [1,2,3,4,5]; track i) {
+      <div class="flex items-center gap-4 px-5 py-4" [class.border-t]="i > 1" [class.border-border-subtle]="i > 1">
+        <div class="flex-1 space-y-2"><div class="h-3 w-1/3 rounded skeleton"></div><div class="h-2.5 w-1/4 rounded skeleton"></div></div>
+        <div class="h-5 w-20 rounded-full skeleton"></div>
+      </div>
+    }
+  </div>
+} @else if (error()) {
+  <p class="font-body-md text-error">Couldn't load skills. Is the backend running?</p>
+} @else {
+  <div tabindex="0" role="region" aria-label="Skills table" class="tis-data-table bg-white border border-border-subtle rounded-2xl overflow-hidden">
+    <div class="grid grid-cols-[1.6fr_1fr_2fr_80px] gap-4 px-5 py-3 text-[11px] font-label-md text-text-muted uppercase tracking-wide">
+      <span>Name</span><span>Category</span><span>Description</span><span></span>
+    </div>
+    @for (skill of filtered(); track skill.id; let i = $index) {
+      <div class="group grid grid-cols-[1.6fr_1fr_2fr_80px] gap-4 px-5 py-3.5 border-t border-border-subtle items-center hover:bg-surface-container-low transition-colors row-in" [style.animation-delay.ms]="i * 30">
+        <span class="text-[13px] font-medium text-on-surface truncate">{{ skill.name }}</span>
+        <span>
+          @if (skill.category) {
+            <span class="text-[12px] bg-surface-container-low text-on-surface-variant px-2.5 py-1 rounded-full w-fit">{{ skill.category }}</span>
+          } @else {
+            <span class="text-[12px] text-outline-variant">—</span>
+          }
+        </span>
+        <span class="text-[12px] text-on-surface-variant truncate">{{ skill.description || '—' }}</span>
+        <div class="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+          <button (click)="openEdit(skill)" aria-label="Edit skill" class="p-1.5 rounded-lg hover:bg-white text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-[17px] block">edit</span></button>
+          <button (click)="confirmDelete(skill)" aria-label="Delete skill" class="p-1.5 rounded-lg hover:bg-white text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-[17px] block">delete</span></button>
+        </div>
+      </div>
+    } @empty {
+      <div class="px-5 py-12 text-center border-t border-border-subtle">
+        <span class="material-symbols-outlined text-[34px] text-outline-variant">psychology_alt</span>
+        <p class="text-[13px] text-on-surface-variant mt-2">
+          @if (searchTerm()) { No matches for "{{ searchTerm() }}" on this page. }
+          @else { No skills yet. Create your first one. }
+        </p>
+      </div>
+    }
+  </div>
+
+  <app-paginator [page]="page()" [totalPages]="totalPages()" [totalElements]="totalElements()" (prev)="prev()" (next)="next()" />
+}
+
+<!-- Create / edit modal -->
+@if (editing() !== null) {
+  <div class="modal-overlay" (click)="closeForm()">
+    <div role="dialog" aria-modal="true" class="modal-card bg-white rounded-2xl p-6 w-full max-w-[440px]" (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="font-headline-md text-[18px] font-semibold text-on-surface">{{ isEditing() ? 'Edit skill' : 'New skill' }}</h3>
+        <button (click)="closeForm()" aria-label="Close" class="text-outline hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px] block">close</span></button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+        <div>
+          <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="name">Name <span class="text-error">*</span></label>
+          <input id="name" formControlName="name" type="text" placeholder="e.g. TypeScript" class="w-full h-11 px-3.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring"/>
+          @if (form.controls.name.touched && form.controls.name.invalid) {
+            <p class="text-[12px] text-error mt-1">A name is required.</p>
+          }
+        </div>
+        <div>
+          <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="category">Category</label>
+          <input id="category" formControlName="category" type="text" placeholder="e.g. Frontend" class="w-full h-11 px-3.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring"/>
+        </div>
+        <div>
+          <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="description">Description</label>
+          <textarea id="description" formControlName="description" rows="3" placeholder="Optional details" class="w-full px-3.5 py-2.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring resize-none"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" (click)="closeForm()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">Cancel</button>
+          <button type="submit" [disabled]="saving()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-white bg-primary hover:opacity-90 transition-all disabled:opacity-60">
+            {{ saving() ? 'Saving…' : (isEditing() ? 'Save changes' : 'Create skill') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+@if (deleteTarget(); as target) {
+  <app-confirm-dialog
+    title="Delete skill"
+    [message]="'Delete ' + target.name + '? This removes it from the catalogue.'"
+    confirmLabel="Delete"
+    [busy]="deleting()"
+    (confirm)="doDelete()"
+    (cancel)="cancelDelete()"
+  />
+}

@@ -1,0 +1,227 @@
+<div class="flex items-end justify-between mb-5">
+  <div>
+    <h2 class="font-headline-lg text-[24px] font-semibold text-on-surface">Users</h2>
+    <p class="text-on-surface-variant font-body-md text-[13px] mt-1">{{ totalElements() }} login accounts</p>
+  </div>
+  <button (click)="openCreate()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[13px] font-medium text-white bg-primary hover:opacity-90 transition-all shrink-0">
+    <span class="material-symbols-outlined text-[18px]">person_add</span> Create user
+  </button>
+</div>
+
+<div class="relative flex-1 max-w-sm mb-4">
+  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-[18px]">search</span>
+  <input (input)="onSearch($event)" class="w-full h-10 pl-10 pr-4 bg-white border border-border-subtle rounded-xl font-body-md text-[13px] text-on-surface search-ring placeholder:text-outline-variant" placeholder="Search username or email" type="text"/>
+</div>
+
+@if (loading()) {
+  <div class="bg-white border border-border-subtle rounded-2xl overflow-hidden">
+    @for (i of [1,2,3,4,5]; track i) {
+      <div class="flex items-center gap-4 px-5 py-4" [class.border-t]="i > 1" [class.border-border-subtle]="i > 1">
+        <div class="flex-1 space-y-2"><div class="h-3 w-1/3 rounded skeleton"></div><div class="h-2.5 w-1/4 rounded skeleton"></div></div>
+        <div class="h-6 w-24 rounded-full skeleton"></div>
+      </div>
+    }
+  </div>
+} @else if (error()) {
+  <p class="font-body-md text-error">Couldn't load users. Is the backend running?</p>
+} @else {
+  <div tabindex="0" role="region" aria-label="Users table" class="tis-data-table bg-white border border-border-subtle rounded-2xl overflow-hidden">
+    <div class="grid grid-cols-[1.5fr_1.4fr_1fr_1fr_130px] gap-4 px-5 py-3 text-[11px] font-label-md text-text-muted uppercase tracking-wide">
+      <span>Account</span><span>Linked employee</span><span>Role</span><span>Status</span><span class="text-right">Actions</span>
+    </div>
+    @for (user of users(); track user.id; let i = $index) {
+      <div class="grid grid-cols-[1.5fr_1.4fr_1fr_1fr_130px] gap-4 px-5 py-3.5 border-t border-border-subtle items-center hover:bg-surface-container-low transition-colors row-in" [class.opacity-60]="busyId() === user.id" [style.animation-delay.ms]="i * 30">
+        <div class="min-w-0">
+          <div class="text-[13px] font-medium text-on-surface truncate">{{ user.username }}</div>
+          <div class="text-[11px] text-text-muted truncate">{{ user.email }}</div>
+        </div>
+
+        <div class="min-w-0">
+          @if (user.employeeId) {
+            <div class="flex items-center gap-1.5">
+              <span class="text-[12px] text-on-surface-variant truncate">{{ employeeLabel(user.employeeId) }}</span>
+              @if (!isSelf(user)) {
+                <button (click)="unlink(user)" title="Unlink" class="text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-[15px] block">link_off</span></button>
+              }
+            </div>
+          } @else if (!isSelf(user)) {
+            <button (click)="openLink(user)" class="text-[12px] text-primary hover:underline flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">add_link</span> Link</button>
+          } @else {
+            <span class="text-[12px] text-text-muted">—</span>
+          }
+        </div>
+
+        <div>
+          <select (change)="changeRole(user, $any($event.target).value)"
+                  [disabled]="busyId() === user.id || isSelf(user)"
+                  class="text-[12px] px-2 py-1 rounded-lg border border-border-subtle bg-white input-focus-ring disabled:opacity-70 disabled:cursor-not-allowed" [class]="roleClass(user.role)">
+            @for (r of roles; track r) { <option [value]="r" [selected]="r === user.role">{{ r }}</option> }
+          </select>
+        </div>
+
+        <div>
+          @if (isSelf(user)) {
+            <span class="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full bg-primary/10 text-primary">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary"></span> You
+            </span>
+          } @else {
+            <button (click)="toggleStatus(user)" [disabled]="busyId() === user.id"
+                    class="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full transition-colors"
+                    [class]="user.enabled ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
+              <span class="w-1.5 h-1.5 rounded-full" [class]="user.enabled ? 'bg-green-500' : 'bg-gray-400'"></span>
+              {{ user.enabled ? 'Enabled' : 'Disabled' }}
+            </button>
+          }
+        </div>
+
+        <div class="flex gap-1 justify-end">
+          @if (isSelf(user)) {
+            <span class="text-[11px] text-text-muted italic pr-1" title="You cannot edit your own account">Read-only</span>
+          } @else {
+            <button (click)="askReset(user)" aria-label="Reset password" title="Reset password" class="p-1.5 rounded-lg hover:bg-white text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-[17px] block">lock_reset</span></button>
+            <button (click)="confirmDelete(user)" aria-label="Delete user" title="Delete user" class="p-1.5 rounded-lg hover:bg-white text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-[17px] block">delete</span></button>
+          }
+        </div>
+      </div>
+    } @empty {
+      <div class="px-5 py-12 text-center border-t border-border-subtle">
+        <span class="material-symbols-outlined text-[34px] text-outline-variant">group_off</span>
+        <p class="text-[13px] text-on-surface-variant mt-2">No users found.</p>
+      </div>
+    }
+  </div>
+
+  <app-paginator [page]="page()" [totalPages]="totalPages()" [totalElements]="totalElements()" (prev)="prev()" (next)="next()" />
+}
+
+<!-- Create user modal -->
+@if (createOpen()) {
+  <div class="modal-overlay" (click)="closeCreate()">
+    <div role="dialog" aria-modal="true" class="modal-card bg-white rounded-2xl p-6 w-full max-w-[440px]" (click)="$event.stopPropagation()">
+      <h3 class="font-headline-md text-[18px] font-semibold text-on-surface mb-1">Create user</h3>
+      <p class="text-[13px] text-on-surface-variant mb-5">A one-time temporary password is generated and shown once.</p>
+
+      <label class="block text-[12px] font-medium text-on-surface-variant mb-1">Username</label>
+      <input [value]="createUsername()" (input)="createUsername.set($any($event.target).value)"
+             class="w-full h-11 px-3 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring mb-4"
+             type="text" placeholder="jdoe" autocomplete="off" />
+
+      <label class="block text-[12px] font-medium text-on-surface-variant mb-1">Email</label>
+      <input [value]="createEmail()" (input)="createEmail.set($any($event.target).value)"
+             class="w-full h-11 px-3 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring mb-4"
+             type="email" placeholder="jane.doe@acme.com" autocomplete="off" />
+
+      <label class="block text-[12px] font-medium text-on-surface-variant mb-1">Role</label>
+      <select [value]="createRole()" (change)="setCreateRole($event)"
+              class="w-full h-11 px-3 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring mb-4">
+        @for (r of roles; track r) { <option [value]="r" [selected]="r === createRole()">{{ r }}</option> }
+      </select>
+
+      <div class="flex items-center justify-between mb-1">
+        <label class="block text-[12px] font-medium text-on-surface-variant">Password</label>
+        <button type="button" (click)="generatePassword()" class="text-[11px] text-primary hover:underline flex items-center gap-1">
+          <span class="material-symbols-outlined text-[14px]">key</span> Generate strong password
+        </button>
+      </div>
+      <input [value]="createPassword()" (input)="createPassword.set($any($event.target).value)"
+             class="w-full h-11 px-3 border border-border-subtle rounded-xl bg-white text-[14px] font-mono input-focus-ring mb-1"
+             type="text" placeholder="At least {{ minPasswordLength }} characters" autocomplete="new-password" />
+      <p class="text-[11px] text-text-muted mb-4">Minimum {{ minPasswordLength }} characters. You can edit a generated password before submitting.</p>
+
+      <label class="block text-[12px] font-medium text-on-surface-variant mb-1">Confirm password</label>
+      <input [value]="createConfirmPassword()" (input)="createConfirmPassword.set($any($event.target).value)"
+             class="w-full h-11 px-3 border border-border-subtle rounded-xl bg-white text-[14px] font-mono input-focus-ring mb-4"
+             type="text" placeholder="Re-enter the password" autocomplete="new-password" />
+
+      @if (createError()) {
+        <p class="text-[12px] text-error mb-4">{{ createError() }}</p>
+      }
+
+      <div class="flex justify-end gap-2">
+        <button (click)="closeCreate()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">Cancel</button>
+        <button (click)="doCreate()" [disabled]="creating()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-white bg-primary hover:opacity-90 transition-all disabled:opacity-60">{{ creating() ? 'Creating…' : 'Create user' }}</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Link employee modal -->
+@if (linkTarget(); as user) {
+  <div class="modal-overlay" (click)="closeLink()">
+    <div role="dialog" aria-modal="true" class="modal-card bg-white rounded-2xl p-6 w-full max-w-[420px]" (click)="$event.stopPropagation()">
+      <h3 class="font-headline-md text-[18px] font-semibold text-on-surface mb-1">Link employee</h3>
+      <p class="text-[13px] text-on-surface-variant mb-4">Attach an employee record to <span class="font-medium">{{ user.username }}</span>.</p>
+      <select [value]="linkEmployeeId()" (change)="setLinkEmployee($event)" class="w-full h-11 px-3 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring mb-5">
+        <option value="">— select employee —</option>
+        @for (e of employees(); track e.id) { <option [value]="e.id">{{ e.firstName }} {{ e.lastName }} — {{ e.email }}</option> }
+      </select>
+      <div class="flex justify-end gap-2">
+        <button (click)="closeLink()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">Cancel</button>
+        <button (click)="doLink()" [disabled]="!linkEmployeeId() || linking()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-white bg-primary hover:opacity-90 transition-all disabled:opacity-60">{{ linking() ? 'Linking…' : 'Link' }}</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Temp password reveal -->
+@if (tempPassword(); as pwd) {
+  <div class="modal-overlay" (click)="dismissTempPassword()">
+    <div role="dialog" aria-modal="true" class="modal-card bg-white rounded-2xl p-6 w-full max-w-[400px]" (click)="$event.stopPropagation()">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="material-symbols-outlined text-primary text-[22px]">vpn_key</span>
+        <h3 class="font-headline-md text-[17px] font-semibold text-on-surface">Temporary password</h3>
+      </div>
+      <p class="text-[13px] text-on-surface-variant mb-3">Share this with the user — it won't be shown again. Their active sessions were revoked.</p>
+      <code class="block bg-surface-container-low rounded-lg px-3 py-2.5 text-[14px] font-mono text-on-surface break-all">{{ pwd }}</code>
+      <div class="flex justify-end mt-5">
+        <button (click)="dismissTempPassword()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-white bg-primary hover:opacity-90 transition-all">Done</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Reset password modal -->
+@if (resetTarget(); as user) {
+  <div class="modal-overlay" (click)="cancelReset()">
+    <div role="dialog" aria-modal="true" class="modal-card bg-white rounded-2xl p-6 w-full max-w-[440px]" (click)="$event.stopPropagation()">
+      <h3 class="font-headline-md text-[18px] font-semibold text-on-surface mb-1">Reset password</h3>
+      <p class="text-[13px] text-on-surface-variant mb-5">Set a new password for <span class="font-medium">{{ user.username }}</span>. This revokes their active sessions.</p>
+
+      <div class="flex items-center justify-between mb-1">
+        <label class="block text-[12px] font-medium text-on-surface-variant">New password</label>
+        <button type="button" (click)="generateResetPassword()" class="text-[11px] text-primary hover:underline flex items-center gap-1">
+          <span class="material-symbols-outlined text-[14px]">key</span> Generate strong password
+        </button>
+      </div>
+      <input [value]="resetNewPassword()" (input)="resetNewPassword.set($any($event.target).value)"
+             class="w-full h-11 px-3 border border-border-subtle rounded-xl bg-white text-[14px] font-mono input-focus-ring mb-1"
+             type="text" placeholder="At least {{ minPasswordLength }} characters" autocomplete="new-password" />
+      <p class="text-[11px] text-text-muted mb-4">Minimum {{ minPasswordLength }} characters. You can edit a generated password before confirming.</p>
+
+      <label class="block text-[12px] font-medium text-on-surface-variant mb-1">Confirm password</label>
+      <input [value]="resetConfirmPassword()" (input)="resetConfirmPassword.set($any($event.target).value)"
+             class="w-full h-11 px-3 border border-border-subtle rounded-xl bg-white text-[14px] font-mono input-focus-ring mb-4"
+             type="text" placeholder="Re-enter the password" autocomplete="new-password" />
+
+      @if (resetError()) {
+        <p class="text-[12px] text-error mb-4">{{ resetError() }}</p>
+      }
+
+      <div class="flex justify-end gap-2">
+        <button (click)="cancelReset()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">Cancel</button>
+        <button (click)="doReset()" [disabled]="resetting()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-white bg-primary hover:opacity-90 transition-all disabled:opacity-60">{{ resetting() ? 'Resetting…' : 'Reset password' }}</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (deleteTarget(); as user) {
+  <app-confirm-dialog
+    title="Delete user"
+    [message]="'Delete ' + user.username + '? Any linked employee is unlinked first.'"
+    confirmLabel="Delete"
+    [busy]="deleting()"
+    (confirm)="doDelete()"
+    (cancel)="cancelDelete()"
+  />
+}

@@ -1,0 +1,87 @@
+<div class="mb-5">
+  <h2 class="font-headline-lg text-[24px] font-semibold text-on-surface">Recommendations</h2>
+  <p class="text-on-surface-variant font-body-md text-[13px] mt-1">
+    Score employees for a project by skill match, availability, certifications, and experience.
+  </p>
+</div>
+
+<div class="bg-white border border-border-subtle rounded-2xl p-4 flex flex-wrap items-end gap-3 mb-5">
+  <div class="flex-1 min-w-[220px]">
+    <label class="block text-[12px] font-medium text-on-surface mb-1.5" for="r-project">Project</label>
+    <select id="r-project" [value]="selectedProjectId()" (change)="onProjectChange($event)" class="w-full h-11 px-3 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring">
+      <option value="">— select a project —</option>
+      @for (p of projects(); track p.id) { <option [value]="p.id">{{ p.name }}</option> }
+    </select>
+  </div>
+  <div class="w-[110px]">
+    <label class="block text-[12px] font-medium text-on-surface mb-1.5" for="r-topn">Top N</label>
+    <input id="r-topn" type="number" min="1" [value]="topN()" (input)="onTopNChange($event)" class="w-full h-11 px-3 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring"/>
+  </div>
+  <button (click)="run()" [disabled]="!selectedProjectId() || loading()" class="h-11 px-5 rounded-xl text-[13px] font-medium text-white bg-primary hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-2">
+    <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+    {{ loading() ? 'Scoring…' : 'Recommend' }}
+  </button>
+</div>
+
+@if (loading()) {
+  <div class="space-y-3">
+    @for (i of [1,2,3]; track i) { <div class="h-[92px] rounded-2xl skeleton"></div> }
+  </div>
+} @else if (error()) {
+  <p class="font-body-md text-error">Couldn't score this project. Is the backend running?</p>
+} @else if (hasSearched()) {
+  <div class="space-y-3">
+    @for (r of results(); track r.employeeId; let i = $index) {
+      <div class="bg-white border border-border-subtle rounded-2xl p-5 shadow-sm row-in" [style.animation-delay.ms]="i * 50">
+        <div class="flex items-center gap-4">
+          <div class="w-9 h-9 rounded-full font-label-md text-[13px] font-semibold flex items-center justify-center shrink-0" [class]="medalClass(i)">{{ i + 1 }}</div>
+          <div class="flex-1 min-w-0">
+            <div class="text-[14px] font-semibold text-on-surface truncate">{{ r.employeeName }}</div>
+            <div class="text-[12px] text-text-muted truncate">{{ r.jobTitle || '—' }}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-headline-md text-[20px] font-semibold text-primary leading-none">{{ scorePercent(r.totalScore) }}<span class="text-[13px] text-text-muted">%</span></div>
+            <div class="text-[10px] text-text-muted uppercase tracking-wide mt-1">match score</div>
+          </div>
+        </div>
+
+        <div class="h-1.5 bg-surface-container-low rounded-full mt-4 overflow-hidden">
+          <div class="h-1.5 bg-primary rounded-full bar" [style.width.%]="scorePercent(r.totalScore)"></div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-4">
+          <div class="text-center">
+            <div class="text-[13px] font-medium text-on-surface">{{ r.breakdown.matchedSkillCount }}/{{ r.breakdown.requiredSkillCount }}</div>
+            <div class="text-[10px] text-text-muted uppercase tracking-wide mt-0.5">Skills</div>
+          </div>
+          <div class="text-center">
+            <div class="text-[13px] font-medium text-on-surface">{{ r.breakdown.skillLevel | number:'1.0-1' }}</div>
+            <div class="text-[10px] text-text-muted uppercase tracking-wide mt-0.5">Level</div>
+          </div>
+          <div class="text-center">
+            <div class="text-[13px] font-medium text-on-surface">{{ r.breakdown.availability | number:'1.0-1' }}</div>
+            <div class="text-[10px] text-text-muted uppercase tracking-wide mt-0.5">Avail.</div>
+          </div>
+          <div class="text-center">
+            <div class="text-[13px] font-medium text-on-surface">{{ r.breakdown.certScore | number:'1.0-1' }}</div>
+            <div class="text-[10px] text-text-muted uppercase tracking-wide mt-0.5">Certs</div>
+          </div>
+          <div class="text-center">
+            <div class="text-[13px] font-medium text-on-surface">{{ r.breakdown.experience | number:'1.0-1' }}</div>
+            <div class="text-[10px] text-text-muted uppercase tracking-wide mt-0.5">Exp.</div>
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="py-16 text-center">
+        <span class="material-symbols-outlined text-[38px] text-outline-variant">search_off</span>
+        <p class="text-[13px] text-on-surface-variant mt-2">No candidates scored for this project.</p>
+      </div>
+    }
+  </div>
+} @else {
+  <div class="py-16 text-center">
+    <span class="material-symbols-outlined text-[38px] text-outline-variant">auto_awesome</span>
+    <p class="text-[13px] text-on-surface-variant mt-2">Pick a project to see recommended employees.</p>
+  </div>
+}

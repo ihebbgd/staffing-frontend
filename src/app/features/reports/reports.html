@@ -1,0 +1,89 @@
+<div class="mb-5">
+  <h2 class="font-headline-lg text-[24px] font-semibold text-on-surface">Reports</h2>
+  <p class="text-on-surface-variant font-body-md text-[13px] mt-1">Utilization and certification aggregates.</p>
+</div>
+
+<div class="flex bg-surface-container-low rounded-xl p-1 w-fit mb-5">
+  <button (click)="setTab('utilization')" class="px-4 py-1.5 rounded-lg text-[13px] font-medium transition-all"
+          [class.bg-white]="tab() === 'utilization'" [class.shadow-sm]="tab() === 'utilization'"
+          [class.text-primary]="tab() === 'utilization'" [class.text-on-surface-variant]="tab() !== 'utilization'">
+    Utilization
+  </button>
+  <button (click)="setTab('certifications')" class="px-4 py-1.5 rounded-lg text-[13px] font-medium transition-all"
+          [class.bg-white]="tab() === 'certifications'" [class.shadow-sm]="tab() === 'certifications'"
+          [class.text-primary]="tab() === 'certifications'" [class.text-on-surface-variant]="tab() !== 'certifications'">
+    Certifications
+  </button>
+</div>
+
+@if (loading()) {
+  <div class="space-y-3">
+    @for (i of [1,2,3,4,5]; track i) { <div class="h-12 rounded-xl skeleton"></div> }
+  </div>
+} @else if (error()) {
+  <p class="font-body-md text-error">Couldn't load reports. Is the backend running?</p>
+} @else {
+
+  @if (tab() === 'utilization') {
+    <div tabindex="0" role="region" aria-label="Reports table" class="tis-data-table bg-white border border-border-subtle rounded-2xl overflow-hidden">
+      <div class="grid grid-cols-[1.8fr_1fr_1fr_1.4fr_1.1fr] gap-4 px-5 py-3 text-[11px] font-label-md text-text-muted uppercase tracking-wide">
+        <span>Employee</span><span>Capacity</span><span>Allocated</span><span>Utilization</span><span>Status</span>
+      </div>
+      @for (row of utilization(); track row.employeeId; let i = $index) {
+        <div class="grid grid-cols-[1.8fr_1fr_1fr_1.4fr_1.1fr] gap-4 px-5 py-3.5 border-t border-border-subtle items-center hover:bg-surface-container-low transition-colors row-in" [style.animation-delay.ms]="i * 25">
+          <span class="text-[13px] font-medium text-on-surface truncate">{{ row.employeeName }}</span>
+          <span class="text-[12px] text-on-surface-variant">{{ row.weeklyCapacityHours }}h</span>
+          <span class="text-[12px] text-on-surface-variant">{{ row.allocatedHours }}h</span>
+          <div class="flex items-center gap-2.5">
+            <div class="flex-1 h-1.5 bg-surface-container-low rounded-full max-w-[90px]">
+              <div class="h-1.5 rounded-full" [class]="row.utilizationPercent > 100 ? 'bg-error' : 'bg-primary'" [style.width.%]="barWidth(row.utilizationPercent)"></div>
+            </div>
+            <span class="text-[12px] text-on-surface-variant whitespace-nowrap">{{ row.utilizationPercent | number:'1.0-0' }}%</span>
+          </div>
+          <span><span class="text-[11px] px-2.5 py-1 rounded-full" [class]="utilizationClass(row.status)">{{ row.status.replace('_', ' ') }}</span></span>
+        </div>
+      } @empty {
+        <div class="px-5 py-12 text-center border-t border-border-subtle">
+          <p class="text-[13px] text-on-surface-variant">No utilization data.</p>
+        </div>
+      }
+    </div>
+  } @else if (certReport(); as report) {
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+      <div class="bg-white border border-border-subtle rounded-2xl p-5">
+        <div class="flex items-center gap-2 text-green-700"><span class="material-symbols-outlined text-[20px]">verified</span><span class="text-[12px] font-label-md uppercase tracking-wide">Active</span></div>
+        <div class="font-headline-lg text-[28px] font-semibold text-on-surface mt-2">{{ report.activeCount }}</div>
+      </div>
+      <div class="bg-white border border-border-subtle rounded-2xl p-5">
+        <div class="flex items-center gap-2 text-amber-700"><span class="material-symbols-outlined text-[20px]">schedule</span><span class="text-[12px] font-label-md uppercase tracking-wide">Expiring soon</span></div>
+        <div class="font-headline-lg text-[28px] font-semibold text-on-surface mt-2">{{ report.expiringSoonCount }}</div>
+      </div>
+      <div class="bg-white border border-border-subtle rounded-2xl p-5">
+        <div class="flex items-center gap-2 text-red-700"><span class="material-symbols-outlined text-[20px]">warning</span><span class="text-[12px] font-label-md uppercase tracking-wide">Expired</span></div>
+        <div class="font-headline-lg text-[28px] font-semibold text-on-surface mt-2">{{ report.expiredCount }}</div>
+      </div>
+    </div>
+
+    @if (report.expiringSoon.length || report.expired.length) {
+      <div class="bg-white border border-border-subtle rounded-2xl p-5">
+        <h4 class="font-headline-md text-[15px] font-medium text-on-surface mb-3">Needs attention</h4>
+        <div class="space-y-2">
+          @for (c of report.expired; track c.id) {
+            <div class="flex items-center justify-between py-1.5">
+              <span class="text-[13px] text-on-surface">{{ c.name }}</span>
+              <span class="flex items-center gap-2 text-[12px] text-red-700"><span class="text-text-muted">{{ c.expiryDate }}</span><span class="bg-red-100 px-2 py-0.5 rounded-full">Expired</span></span>
+            </div>
+          }
+          @for (c of report.expiringSoon; track c.id) {
+            <div class="flex items-center justify-between py-1.5">
+              <span class="text-[13px] text-on-surface">{{ c.name }}</span>
+              <span class="flex items-center gap-2 text-[12px] text-amber-700"><span class="text-text-muted">{{ c.expiryDate }}</span><span class="bg-amber-100 px-2 py-0.5 rounded-full">Expiring</span></span>
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="py-12 text-center"><span class="material-symbols-outlined text-[34px] text-green-500">check_circle</span><p class="text-[13px] text-on-surface-variant mt-2">All certifications are healthy.</p></div>
+    }
+  }
+}
