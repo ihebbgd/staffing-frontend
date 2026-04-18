@@ -3,7 +3,7 @@
     <h2 class="font-headline-lg text-[24px] font-semibold text-on-surface">Employees</h2>
     <p class="text-on-surface-variant font-body-md text-[13px] mt-1">{{ totalElements() }} people · capacity at a glance</p>
   </div>
-  <button class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl font-label-md text-[13px] hover:opacity-90 active:scale-95 transition-all">
+  <button (click)="openCreate()" class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl font-label-md text-[13px] hover:opacity-90 active:scale-95 transition-all">
     <span class="material-symbols-outlined text-[18px]">add</span> Add employee
   </button>
 </div>
@@ -48,12 +48,12 @@
 } @else {
 
   @if (view() === 'table') {
-    <div class="bg-white border border-border-subtle rounded-2xl overflow-hidden">
+    <div tabindex="0" role="region" aria-label="Employees table" class="tis-data-table bg-white border border-border-subtle rounded-2xl overflow-hidden">
       <div class="grid grid-cols-[2.2fr_1fr_1.4fr_0.9fr_1fr_70px] gap-4 px-5 py-3 text-[11px] font-label-md text-text-muted uppercase tracking-wide">
         <span>Person</span><span>Department</span><span>Capacity</span><span>Experience</span><span>Status</span><span></span>
       </div>
 
-      @for (emp of filtered(); track emp.id; let i = $index) {
+      @for (emp of employees(); track emp.id; let i = $index) {
         <div class="group grid grid-cols-[2.2fr_1fr_1.4fr_0.9fr_1fr_70px] gap-4 px-5 py-3.5 border-t border-border-subtle items-center hover:bg-surface-container-low transition-colors row-in" [style.animation-delay.ms]="i * 35">
           <div class="flex items-center gap-3 min-w-0">
             <div class="w-9 h-9 rounded-full font-label-md text-[11px] font-medium flex items-center justify-center shrink-0" [class]="hue(emp)">
@@ -61,11 +61,11 @@
             </div>
             <div class="min-w-0">
               <div class="text-[13px] font-medium text-on-surface truncate">{{ emp.firstName }} {{ emp.lastName }}</div>
-              <div class="text-[11px] text-text-muted truncate">{{ emp.jobTitle }}</div>
+              <div class="text-[11px] text-text-muted truncate">{{ emp.jobTitle || '—' }}</div>
             </div>
           </div>
 
-          <span class="text-[12px] bg-surface-container-low text-on-surface-variant px-2.5 py-1 rounded-full w-fit">{{ emp.department }}</span>
+          <span class="text-[12px] bg-surface-container-low text-on-surface-variant px-2.5 py-1 rounded-full w-fit">{{ emp.department || '—' }}</span>
 
           <div class="flex items-center gap-2.5">
             <div class="flex-1 h-1.5 bg-surface-container-low rounded-full max-w-[90px]">
@@ -85,15 +85,15 @@
           </span>
 
           <div class="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-            <button aria-label="Edit employee" class="p-1.5 rounded-lg hover:bg-white text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-[17px] block">edit</span></button>
-            <button aria-label="Delete employee" class="p-1.5 rounded-lg hover:bg-white text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-[17px] block">delete</span></button>
+            <button (click)="openEdit(emp)" aria-label="Edit employee" class="p-1.5 rounded-lg hover:bg-white text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-[17px] block">edit</span></button>
+            <button (click)="confirmDelete(emp)" aria-label="Delete employee" class="p-1.5 rounded-lg hover:bg-white text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-[17px] block">delete</span></button>
           </div>
         </div>
       } @empty {
         <div class="px-5 py-12 text-center border-t border-border-subtle">
           <span class="material-symbols-outlined text-[34px] text-outline-variant">person_search</span>
           <p class="text-[13px] text-on-surface-variant mt-2">
-            @if (searchTerm()) { No matches for "{{ searchTerm() }}" on this page. }
+            @if (searchTerm()) { No matches for "{{ searchTerm() }}"  }
             @else { No employees yet. Add your first one to get started. }
           </p>
         </div>
@@ -101,19 +101,23 @@
     </div>
   } @else {
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-      @for (emp of filtered(); track emp.id; let i = $index) {
-        <div class="bg-white border border-border-subtle rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow row-in" [style.animation-delay.ms]="i * 45">
+      @for (emp of employees(); track emp.id; let i = $index) {
+        <div class="group bg-white border border-border-subtle rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow row-in" [style.animation-delay.ms]="i * 45">
           <div class="flex items-center gap-3">
             <div class="w-12 h-12 rounded-full font-label-md text-[13px] font-medium flex items-center justify-center shrink-0" [class]="hue(emp)">
               {{ initials(emp) }}
             </div>
-            <div class="min-w-0">
+            <div class="min-w-0 flex-1">
               <div class="text-[14px] font-medium text-on-surface truncate">{{ emp.firstName }} {{ emp.lastName }}</div>
-              <div class="text-[12px] text-text-muted truncate">{{ emp.jobTitle }}</div>
+              <div class="text-[12px] text-text-muted truncate">{{ emp.jobTitle || '—' }}</div>
+            </div>
+            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button (click)="openEdit(emp)" aria-label="Edit employee" class="p-1.5 rounded-lg hover:bg-surface-container-low text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-[16px] block">edit</span></button>
+              <button (click)="confirmDelete(emp)" aria-label="Delete employee" class="p-1.5 rounded-lg hover:bg-surface-container-low text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-[16px] block">delete</span></button>
             </div>
           </div>
           <div class="flex items-center justify-between mt-4">
-            <span class="text-[11px] bg-surface-container-low text-on-surface-variant px-2.5 py-1 rounded-full">{{ emp.department }}</span>
+            <span class="text-[11px] bg-surface-container-low text-on-surface-variant px-2.5 py-1 rounded-full">{{ emp.department || '—' }}</span>
             <span class="text-[11px] text-text-muted">{{ emp.yearsOfExperience }} yrs exp</span>
           </div>
           <div class="flex items-center gap-2.5 mt-3">
@@ -126,21 +130,138 @@
       } @empty {
         <div class="col-span-full py-12 text-center">
           <span class="material-symbols-outlined text-[34px] text-outline-variant">person_search</span>
-          <p class="text-[13px] text-on-surface-variant mt-2">No matches on this page.</p>
+          <p class="text-[13px] text-on-surface-variant mt-2">No matches </p>
         </div>
       }
     </div>
   }
 
-  <div class="flex items-center justify-between mt-4">
-    <span class="text-[11px] text-text-muted">Page {{ currentPage() + 1 }} of {{ totalPages() }} · {{ totalElements() }} total</span>
-    <div class="flex gap-2">
-      <button (click)="prevPage()" [disabled]="currentPage() === 0" aria-label="Previous page" class="p-1.5 bg-white border border-border-subtle rounded-lg hover:bg-surface-container-low disabled:opacity-40 transition-colors">
-        <span class="material-symbols-outlined text-[18px] text-on-surface-variant block">chevron_left</span>
-      </button>
-      <button (click)="nextPage()" [disabled]="currentPage() >= totalPages() - 1" aria-label="Next page" class="p-1.5 bg-white border border-border-subtle rounded-lg hover:bg-surface-container-low disabled:opacity-40 transition-colors">
-        <span class="material-symbols-outlined text-[18px] text-on-surface-variant block">chevron_right</span>
-      </button>
+  <app-paginator [page]="currentPage()" [totalPages]="totalPages()" [totalElements]="totalElements()" (prev)="prevPage()" (next)="nextPage()" />
+}
+
+<!-- Create / edit modal -->
+@if (editing() !== null) {
+  <div class="modal-overlay" (click)="closeForm()">
+    <div role="dialog" aria-modal="true" class="modal-card bg-white rounded-2xl p-6 w-full max-w-[560px]" (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="font-headline-md text-[18px] font-semibold text-on-surface">{{ isEditing() ? 'Edit employee' : 'New employee' }}</h3>
+        <button (click)="closeForm()" aria-label="Close" class="text-outline hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px] block">close</span></button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="e-first">First name <span class="text-error">*</span></label>
+            <input id="e-first" formControlName="firstName" type="text" class="w-full h-11 px-3.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring"/>
+            @if (form.controls.firstName.touched && form.controls.firstName.invalid) { <p class="text-[12px] text-error mt-1">Required.</p> }
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="e-last">Last name <span class="text-error">*</span></label>
+            <input id="e-last" formControlName="lastName" type="text" class="w-full h-11 px-3.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring"/>
+            @if (form.controls.lastName.touched && form.controls.lastName.invalid) { <p class="text-[12px] text-error mt-1">Required.</p> }
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="e-email">Email <span class="text-error">*</span></label>
+          <input id="e-email" formControlName="email" type="email" class="w-full h-11 px-3.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring"/>
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            <p class="text-[12px] text-error mt-1">A valid email is required.</p>
+          }
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="e-title">Job title</label>
+            <input id="e-title" formControlName="jobTitle" type="text" class="w-full h-11 px-3.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring"/>
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="e-dept">Department</label>
+            <input id="e-dept" formControlName="department" type="text" class="w-full h-11 px-3.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring"/>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="e-cap">Weekly capacity (h)</label>
+            <input id="e-cap" formControlName="weeklyCapacityHours" type="number" min="0" class="w-full h-11 px-3.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring"/>
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="e-exp">Years of experience</label>
+            <input id="e-exp" formControlName="yearsOfExperience" type="number" min="0" class="w-full h-11 px-3.5 border border-border-subtle rounded-xl bg-white text-[14px] input-focus-ring"/>
+          </div>
+        </div>
+
+        <label class="flex items-center gap-2 text-[13px] text-on-surface cursor-pointer">
+          <input formControlName="active" type="checkbox" class="w-4 h-4 accent-[color:var(--color-primary)]"/> Active employee
+        </label>
+
+        @if (!isEditing()) {
+          <div class="border-t border-border-subtle pt-4">
+            <p class="text-[12px] text-text-muted mb-3">Login account (optional — a username/password is auto-generated if left blank).</p>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="e-user">Username</label>
+                <input id="e-user" formControlName="username" type="text" class="w-full h-11 px-3 border border-border-subtle rounded-xl bg-white text-[13px] input-focus-ring"/>
+              </div>
+              <div>
+                <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="e-pass">Password</label>
+                <input id="e-pass" formControlName="password" type="text" class="w-full h-11 px-3 border border-border-subtle rounded-xl bg-white text-[13px] input-focus-ring"/>
+              </div>
+              <div>
+                <label class="block text-[13px] font-medium text-on-surface mb-1.5" for="e-role">Role</label>
+                <select id="e-role" formControlName="role" class="w-full h-11 px-3 border border-border-subtle rounded-xl bg-white text-[13px] input-focus-ring">
+                  @for (r of roles; track r) { <option [value]="r">{{ r }}</option> }
+                </select>
+              </div>
+            </div>
+          </div>
+        }
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" (click)="closeForm()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">Cancel</button>
+          <button type="submit" [disabled]="saving()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-white bg-primary hover:opacity-90 transition-all disabled:opacity-60">
+            {{ saving() ? 'Saving…' : (isEditing() ? 'Save changes' : 'Create employee') }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
+}
+
+<!-- New account credentials reveal -->
+@if (newCredentials(); as creds) {
+  <div class="modal-overlay" (click)="dismissCredentials()">
+    <div role="dialog" aria-modal="true" class="modal-card bg-white rounded-2xl p-6 w-full max-w-[400px]" (click)="$event.stopPropagation()">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="material-symbols-outlined text-green-600 text-[22px]">check_circle</span>
+        <h3 class="font-headline-md text-[17px] font-semibold text-on-surface">Employee created</h3>
+      </div>
+      <p class="text-[13px] text-on-surface-variant mb-3">Share these credentials — the password won't be shown again.</p>
+      <div class="space-y-2">
+        <div class="bg-surface-container-low rounded-lg px-3 py-2">
+          <div class="text-[10px] text-text-muted uppercase tracking-wide">Username</div>
+          <div class="text-[14px] font-mono text-on-surface break-all">{{ creds.username }}</div>
+        </div>
+        <div class="bg-surface-container-low rounded-lg px-3 py-2">
+          <div class="text-[10px] text-text-muted uppercase tracking-wide">Temporary password</div>
+          <div class="text-[14px] font-mono text-on-surface break-all">{{ creds.temporaryPassword }}</div>
+        </div>
+      </div>
+      <div class="flex justify-end mt-5">
+        <button (click)="dismissCredentials()" class="px-4 py-2 rounded-xl text-[13px] font-medium text-white bg-primary hover:opacity-90 transition-all">Done</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (deleteTarget(); as target) {
+  <app-confirm-dialog
+    title="Delete employee"
+    [message]="'Delete ' + target.firstName + ' ' + target.lastName + '? Their linked login is removed too.'"
+    confirmLabel="Delete"
+    [busy]="deleting()"
+    (confirm)="doDelete()"
+    (cancel)="cancelDelete()"
+  />
 }
