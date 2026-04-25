@@ -2,41 +2,42 @@
 
 @theme {
   /* ---- Colors ---- */
-  --color-primary: #3525cd;
-  --color-primary-container: #4f46e5;
+  --color-primary: #003f80;
+  --color-primary-container: #0056b3;
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #dad7ff;
-  --color-tertiary: #3421d3;
-  --color-tertiary-container: #4e44ea;
+  --color-on-primary-container: #ffffff;
+  --color-tertiary: #0056b3;
+  --color-tertiary-container: #eaf2fb;
   --color-on-tertiary: #ffffff;
-  --color-secondary: #49607e;
-  --color-secondary-container: #c4dcff;
+  --color-secondary: #666666;
+  --color-secondary-container: #f1f4f7;
   --color-on-secondary: #ffffff;
   --color-error: #ba1a1a;
   --color-error-container: #ffdad6;
   --color-on-error: #ffffff;
-  --color-background: #f9f9ff;
-  --color-bg-surface: #F6F9FC;
+  --color-on-error-container: #7f1d1d;
+  --color-background: #ffffff;
+  --color-bg-surface: #f7f9fb;
   --color-bg-canvas: #FFFFFF;
-  --color-surface: #f9f9ff;
-  --color-surface-bright: #f9f9ff;
-  --color-surface-dim: #cfdaf2;
+  --color-surface: #ffffff;
+  --color-surface-bright: #ffffff;
+  --color-surface-dim: #e6e9ed;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f0f3ff;
-  --color-surface-container: #e7eeff;
-  --color-surface-container-high: #dee8ff;
-  --color-surface-container-highest: #d8e3fb;
-  --color-surface-variant: #d8e3fb;
-  --color-on-surface: #111c2d;
-  --color-on-surface-variant: #464555;
-  --color-on-background: #111c2d;
-  --color-inverse-surface: #263143;
-  --color-inverse-on-surface: #ecf1ff;
-  --color-outline: #777587;
-  --color-outline-variant: #c7c4d8;
-  --color-text-muted: #64748B;
-  --color-border-subtle: #E2E8F0;
-  --color-accent-cyan: #00D2D2;
+  --color-surface-container-low: #f0f5fa;
+  --color-surface-container: #eaf0f6;
+  --color-surface-container-high: #e0eaf4;
+  --color-surface-container-highest: #d5e3f1;
+  --color-surface-variant: #eaf0f6;
+  --color-on-surface: #333333;
+  --color-on-surface-variant: #666666;
+  --color-on-background: #333333;
+  --color-inverse-surface: #003f80;
+  --color-inverse-on-surface: #ffffff;
+  --color-outline: #666666;
+  --color-outline-variant: #cccccc;
+  --color-text-muted: #666666;
+  --color-border-subtle: #dfe5eb;
+  --color-accent-cyan: #b8d8fa;
 
   /* ---- Spacing ---- */
   --spacing-stack-sm: 8px;
@@ -50,11 +51,20 @@
   /* ---- Font families ---- */
   --font-body-md: "Inter", sans-serif;
   --font-body-lg: "Inter", sans-serif;
-  --font-headline-md: "Geist", sans-serif;
-  --font-headline-lg: "Geist", sans-serif;
-  --font-display-lg: "Geist", sans-serif;
-  --font-label-md: "Geist", sans-serif;
-  --font-label-sm: "Geist", sans-serif;
+  --font-sans: "Inter", Arial, sans-serif;
+  --font-headline-md: "Inter", Arial, sans-serif;
+  --font-headline-lg: "Inter", Arial, sans-serif;
+  --font-display-lg: "Inter", Arial, sans-serif;
+  --font-label-md: "Inter", Arial, sans-serif;
+  --font-label-sm: "Inter", Arial, sans-serif;
+  --font-secondary: "Poppins", "Inter", Arial, sans-serif;
+
+  /* Compact controls and subtly rounded panels from the TIS UI guide. */
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  --radius-2xl: 12px;
+  --shadow-sm: 0 2px 6px rgb(0 63 128 / 3%);
+  --shadow-md: 0 6px 18px rgb(0 63 128 / 7%);
 
   /* ---- Type scale ---- */
   --text-display-lg: 48px;
@@ -64,26 +74,228 @@
   --text-headline-lg: 32px;
   --text-headline-lg--line-height: 1.2;
   --text-headline-lg--letter-spacing: -0.02em;
-  --text-headline-lg--font-weight: 600;
+  --text-headline-lg--font-weight: 700;
   --text-headline-md: 24px;
   --text-headline-md--line-height: 1.3;
   --text-headline-md--letter-spacing: -0.01em;
-  --text-headline-md--font-weight: 500;
+  --text-headline-md--font-weight: 600;
   --text-body-lg: 16px;
   --text-body-lg--line-height: 1.6;
   --text-body-md: 14px;
   --text-body-md--line-height: 1.5;
   --text-label-md: 13px;
-  --text-label-md--line-height: 1;
-  --text-label-md--letter-spacing: 0.05em;
-  --text-label-md--font-weight: 500;
-  --text-label-sm: 11px;
-  --text-label-sm--line-height: 1;
+  --text-label-md--line-height: 1.4;
+  --text-label-md--letter-spacing: 0;
+  --text-label-md--font-weight: 600;
+  --text-label-sm: 12px;
+  --text-label-sm--line-height: 1.4;
   --text-label-sm--letter-spacing: 0.05em;
   --text-label-sm--font-weight: 600;
+}
+
+@layer base {
+  body {
+    margin: 0;
+    background: var(--color-background);
+    color: var(--color-on-surface);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-variant-numeric: tabular-nums;
+  }
+
+  button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+  button, a { touch-action: manipulation; }
+  button { min-height: 36px; cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  input, select, textarea { min-width: 0; accent-color: var(--color-primary-container); }
+  input::placeholder, textarea::placeholder { color: var(--color-text-muted); opacity: 1; }
+  ::selection { background: #dceafa; color: var(--color-primary); }
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--color-primary-container);
+  outline-offset: 3px;
+}
+
+.transition-soft {
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+}
+
+/* Typographic wordmark; replace with the official vector asset when available. */
+.tis-wordmark {
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+  font-size: 46px;
+  font-weight: 800;
+  letter-spacing: -3px;
+  line-height: 1;
+}
+
+.tis-brand-name {
+  font-family: var(--font-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: .025em;
+  text-transform: uppercase;
+}
+
+/* Shared feature styles also cover templates embedded in untouched TS files. */
+.tis-content > :not(router-outlet) { display: block; min-width: 0; }
+.tis-content h2.font-headline-lg {
+  font-size: clamp(26px, 2.5vw, 32px);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -.035em;
+  overflow-wrap: anywhere;
+}
+.tis-content h4 {
+  font-family: var(--font-secondary);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+.tis-content > * > .flex.items-end.justify-between {
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 28px;
+}
+.tis-content :where(button.bg-primary) {
+  min-height: 40px;
+  box-shadow: 0 2px 4px rgb(0 63 128 / 10%);
+}
+.tis-content :where(button.bg-primary):hover:not(:disabled) {
+  background-color: var(--color-primary-container);
+}
+.tis-content :where(input, select, textarea).border {
+  border-color: var(--color-outline-variant);
+}
+.tis-content input::placeholder, .tis-content textarea::placeholder {
+  color: var(--color-text-muted);
+}
+.tis-content .group:focus-within .opacity-0 { opacity: 1; }
+
+/* Existing grid tables keep every column and action in their original order. */
+.tis-data-table,
+.tis-content .overflow-hidden:has(> [class*="grid-cols-["]) {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-color: #b0becd #f1f4f7;
+  scrollbar-width: thin;
+}
+.tis-data-table > [class*="grid-cols-["],
+.tis-content .overflow-hidden > [class*="grid-cols-["] {
+  min-width: 760px;
+  min-height: 64px;
+}
+.tis-data-table > [class*="grid-cols-["]:first-child,
+.tis-content .overflow-hidden > [class*="grid-cols-["]:first-child {
+  min-height: 44px;
+  align-items: center;
+  background: #f4f7fa;
+  color: var(--color-on-surface-variant);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.tis-data-table > .row-in:nth-child(odd),
+.tis-content .overflow-hidden > .row-in:nth-child(odd) { background-color: #fafbfc; }
+.tis-data-table > .row-in:hover,
+.tis-content .overflow-hidden > .row-in:hover { background-color: var(--color-surface-container-low); }
+.tis-content app-paginator > div { flex-wrap: wrap; gap: 12px; }
+.tis-content app-paginator button { min-width: 36px; }
+
+@media (hover: none) {
+  .tis-content .group .opacity-0 { opacity: 1; }
+}
+
+@media (max-width: 639px) {
+  .modal-card form .grid { grid-template-columns: minmax(0, 1fr); }
+  .tis-content :where(input, select, textarea):not([type="checkbox"]) { font-size: 16px; }
+  .tis-content > * > .flex.items-end.justify-between { align-items: flex-start; margin-bottom: 20px; }
+  .tis-content .group .opacity-0 { opacity: 1; }
 }
 
 /* Global icon font setup (used by every page) */
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ============================================================
+   Shared UI utilities — available to every feature page so
+   components don't each redeclare the same animations.
+   ============================================================ */
+
+@keyframes ui-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.rise { animation: ui-rise 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.row-in { animation: ui-rise 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+.bar {
+  animation: ui-grow 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: left;
+}
+@keyframes ui-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+@keyframes ui-shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+.skeleton {
+  background: linear-gradient(90deg, #eef1f7 25%, #f7f9fc 40%, #eef1f7 60%);
+  background-size: 200% 100%;
+  animation: ui-shimmer 1.4s ease infinite;
+}
+
+/* Deterministic identity chips for avatars */
+.hue-indigo { background: #eaf2fb; color: #003f80; }
+.hue-teal   { background: #e1f5ee; color: #0f6e56; }
+.hue-amber  { background: #faeeda; color: #854f0b; }
+.hue-rose   { background: #fbeaf0; color: #993556; }
+.hue-violet { background: #edf1f5; color: #496078; }
+
+/* Focus ring shared by inputs/selects across forms */
+.input-focus-ring,
+.search-ring {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input-focus-ring:focus,
+.search-ring:focus {
+  outline: none;
+  border-color: var(--color-primary-container);
+  box-shadow: 0 0 0 3px rgb(0 86 179 / 14%);
+}
+
+/* Modal / dialog overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 32 65 / 42%);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 50;
+  animation: ui-fade 0.15s ease both;
+}
+.modal-card {
+  animation: ui-pop 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgb(0 32 65 / 18%);
+}
+@keyframes ui-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ui-pop { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise, .row-in, .bar, .skeleton, .modal-overlay, .modal-card { animation: none; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

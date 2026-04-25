@@ -1,37 +1,34 @@
-<div class="w-full min-h-screen flex">
+<div class="tis-login w-full min-h-screen flex">
   <!-- Left: branded panel -->
-  <div class="hidden lg:flex lg:w-1/2 bg-primary relative overflow-hidden flex-col justify-between p-12">
-    <div class="absolute top-[-15%] right-[-10%] w-[50%] h-[50%] bg-tertiary/40 blur-[100px] rounded-full"></div>
-    <div class="absolute bottom-[-15%] left-[-10%] w-[45%] h-[45%] bg-accent-cyan/20 blur-[100px] rounded-full"></div>
+  <div class="tis-login-panel hidden lg:flex lg:w-1/2 bg-primary relative overflow-hidden flex-col justify-between p-12">
+    <div aria-hidden="true" class="tis-orbit tis-orbit-outer"></div>
+    <div aria-hidden="true" class="tis-orbit tis-orbit-inner"></div>
 
-    <div class="relative flex items-center gap-3">
-      <div class="w-10 h-10 bg-white/15 backdrop-blur-md rounded-xl flex items-center justify-center">
-        <span class="material-symbols-outlined text-white text-[22px]" style="font-variation-settings: 'FILL' 1;">deployed_code</span>
-      </div>
-      <span class="font-headline-md text-[18px] font-semibold text-white">Staffing Platform</span>
+    <div class="tis-login-brand relative flex items-center gap-3">
+      <span class="tis-wordmark">TIS</span>
+      <span class="tis-brand-name">Telecom<br>Information Services</span>
     </div>
 
-    <div class="relative">
+    <div class="tis-login-intro relative">
+      <p class="tis-login-eyebrow">Staffing Platform</p>
       <h2 class="font-headline-lg text-[34px] font-semibold text-white leading-tight">Resource allocation,<br/>made intelligent.</h2>
       <p class="font-body-lg text-[16px] text-white/70 mt-4 max-w-md">Plan capacity, prevent over-allocation, and staff every project with the right people.</p>
       <div class="flex items-center gap-2 mt-8">
-        <div class="w-2 h-2 rounded-full bg-accent-cyan animate-pulse"></div>
+        <div class="w-2 h-2 rounded-full bg-accent-cyan"></div>
         <span class="font-body-md text-[13px] text-white/60">Trusted internal workforce system</span>
       </div>
     </div>
 
-    <div class="relative font-label-sm text-[11px] text-white/40">© 2026 Staffing Platform · internal tool</div>
+    <div class="tis-login-footer relative font-label-sm text-[11px] text-white/40">© 2026 TIS · Telecom Information Services</div>
   </div>
 
   <!-- Right: sign-in form -->
-  <div class="w-full lg:w-1/2 flex items-center justify-center p-6 bg-bg-surface">
-    <div class="w-full max-w-[380px]">
+  <div class="tis-login-form w-full lg:w-1/2 flex items-center justify-center p-6 bg-bg-surface">
+    <div class="tis-login-card w-full max-w-[380px]">
       <!-- Mobile-only brand (hidden on desktop where the panel shows it) -->
-      <div class="lg:hidden flex items-center gap-2 mb-8">
-        <div class="w-9 h-9 bg-primary-container rounded-lg flex items-center justify-center">
-          <span class="material-symbols-outlined text-on-primary text-[20px]">deployed_code</span>
-        </div>
-        <span class="font-headline-md text-[16px] font-semibold text-on-surface">Staffing Platform</span>
+      <div class="tis-mobile-brand lg:hidden flex items-center gap-2 mb-8">
+        <span class="tis-wordmark">TIS</span>
+        <span class="tis-brand-name">Telecom<br>Information Services</span>
       </div>
 
       <h1 class="font-headline-md text-[26px] font-semibold text-on-surface tracking-tight">Welcome back</h1>

@@ -1,0 +1,117 @@
+:host { display: block; }
+
+.tis-shell { min-height: 100dvh; }
+.tis-sidebar {
+  position: sticky;
+  top: 0;
+  width: 248px;
+  height: 100dvh;
+}
+.tis-brand {
+  min-height: 84px;
+  padding: 20px 24px;
+  gap: 14px;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+.tis-brand-name { color: var(--color-primary); }
+.tis-nav { flex: 1; padding: 22px 14px; gap: 4px; }
+.tis-nav a {
+  min-height: 42px;
+  padding: 10px 12px;
+  gap: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.tis-nav a .material-symbols-outlined { font-size: 20px; }
+.tis-nav a.bg-surface-container-low {
+  background: #eaf2fb;
+  color: var(--color-primary);
+  box-shadow: inset 3px 0 var(--color-primary);
+  font-weight: 600;
+}
+.tis-nav > div {
+  padding: 22px 12px 8px;
+  font-family: var(--font-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+}
+.tis-sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 24px;
+  border-top: 1px solid var(--color-border-subtle);
+  color: var(--color-primary);
+}
+.tis-sidebar-footer strong { display: block; font-size: 12px; font-weight: 600; }
+.tis-sidebar-footer div > span { display: block; margin-top: 3px; font-size: 9px; color: var(--color-text-muted); }
+.tis-topbar {
+  height: 84px;
+  padding-inline: 32px;
+  gap: 20px;
+  background: var(--color-primary);
+  border-color: transparent;
+  color: white;
+}
+.tis-topbar-title { color: #e1ecf8; font-size: 13px; }
+.tis-account { gap: 18px; flex-shrink: 0; }
+.tis-account-name > div:first-child { color: white; font-size: 13px; }
+.tis-account-name > div:last-child { color: #cadcf0; margin-top: 5px; font-size: 10px; }
+.tis-account > a { color: white; padding: 9px; border-radius: 6px; }
+.tis-account > a:hover, .tis-account > a.text-primary { background: rgb(255 255 255 / 15%); }
+.tis-account > .rounded-full {
+  width: 36px;
+  height: 36px;
+  background: #eaf2fb;
+  font-size: 12px;
+}
+.tis-account > button {
+  color: #fff;
+  border: 1px solid rgb(255 255 255 / 35%);
+  padding: 7px 12px;
+  border-radius: 6px;
+}
+.tis-account > button:hover { background: rgb(255 255 255 / 15%); }
+.tis-topbar :focus-visible { outline-color: white; }
+.tis-content {
+  width: 100%;
+  max-width: 1560px;
+  margin-inline: auto;
+  padding: 36px 32px 48px;
+  overflow: visible;
+}
+
+@media (max-width: 1100px) and (min-width: 768px) {
+  .tis-sidebar { width: 224px; }
+  .tis-brand { padding-inline: 18px; gap: 10px; }
+  .tis-brand-name { font-size: 9px; }
+  .tis-topbar-title { max-width: 180px; }
+  .tis-topbar, .tis-content { padding-inline: 24px; }
+  .tis-account { gap: 10px; }
+}
+
+@media (max-width: 767px) {
+  .tis-shell { flex-direction: column; }
+  .tis-sidebar { position: static; width: 100%; height: auto; border-right: 0; }
+  .tis-brand { min-height: 72px; padding: 14px 20px; }
+  .tis-wordmark { font-size: 40px; }
+  .tis-brand-name { font-size: 9px; }
+  .tis-nav {
+    flex-direction: row;
+    flex: none;
+    padding: 8px 12px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  .tis-nav a { flex-shrink: 0; white-space: nowrap; min-height: 44px; }
+  .tis-nav a.bg-surface-container-low { box-shadow: inset 0 -3px var(--color-primary); }
+  .tis-nav > div, .tis-sidebar-footer { display: none; }
+  .tis-topbar { height: 64px; padding-inline: 20px; justify-content: flex-end; }
+  .tis-topbar-title { display: none; }
+  .tis-account { width: 100%; gap: 12px; }
+  .tis-account-name { display: block; text-align: left; margin-right: auto; min-width: 0; }
+  .tis-account-name > div:first-child { max-width: 34vw; overflow: hidden; text-overflow: ellipsis; }
+  .tis-content { padding: 24px 16px 36px; }
+}

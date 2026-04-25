@@ -1,40 +1,65 @@
-:host {
-  display: block;
-  min-height: 100vh;
+:host { display: block; min-height: 100dvh; }
+.tis-login { min-height: 100dvh; }
+.tis-login-panel {
+  padding: clamp(40px, 5vw, 80px);
+  background: var(--color-primary);
+  min-height: 100dvh;
 }
-
-.input-focus-ring {
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.input-focus-ring:focus {
-  outline: none;
-  border-color: #3525cd;
-  box-shadow: 0 0 0 3px rgba(53, 37, 205, 0.12);
-}
-
-.btn-primary {
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.25s ease, background-color 0.2s ease;
-  box-shadow: 0 1px 2px rgba(53, 37, 205, 0.2);
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(53, 37, 205, 0.32);
-}
-.btn-primary:active {
-  transform: translateY(0);
-}
-.btn-primary::after {
-  content: "";
+.tis-login-brand { gap: 20px; }
+.tis-login-brand .tis-wordmark { color: white; font-size: 64px; letter-spacing: -4px; }
+.tis-login-brand .tis-brand-name { color: white; font-size: 12px; }
+.tis-orbit {
   position: absolute;
-  top: 0;
-  left: -120%;
-  width: 80%;
-  height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
-  transition: left 0.5s ease;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 50%;
+  pointer-events: none;
+  aspect-ratio: 1;
 }
-.btn-primary:hover::after {
-  left: 130%;
+.tis-orbit-outer { width: 780px; bottom: -430px; right: -320px; }
+.tis-orbit-inner { width: 580px; bottom: -330px; right: -220px; }
+.tis-login-intro { padding-block: 64px; }
+.tis-login-eyebrow {
+  margin-bottom: 24px;
+  font-family: var(--font-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #c8def5;
+}
+.tis-login-intro h2 {
+  max-width: 540px;
+  font-size: clamp(34px, 3.3vw, 52px);
+  line-height: 1.18;
+  font-weight: 700;
+  letter-spacing: -.04em;
+}
+.tis-login-intro > p:not(.tis-login-eyebrow) { margin-top: 24px; line-height: 1.8; color: #dbe8f6; }
+.tis-login-intro .text-white\/60 { color: #cadcf0; }
+.tis-login-footer { color: #cadcf0; font-size: 12px; letter-spacing: 0; }
+.tis-login-form { background: white; padding: 48px; }
+.tis-login-card { max-width: 400px; }
+.tis-login-card h1 { font-size: 32px; line-height: 1.25; font-weight: 700; letter-spacing: -.035em; }
+.tis-login-card label { font-weight: 600; }
+.tis-login-card input { border-color: var(--color-outline-variant); border-radius: 6px; }
+.tis-login-card input::placeholder { color: #767676; }
+.tis-login-card form .material-symbols-outlined { color: #767676; }
+.tis-login-card form .text-error { color: var(--color-error); }
+.tis-login-card > .bg-surface-container-low { background: #f4f7fa; border-radius: 6px; }
+.btn-primary {
+  border-radius: 6px;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgb(0 63 128 / 12%);
+  transition: background-color 160ms ease, box-shadow 160ms ease;
+}
+.btn-primary:hover:not(:disabled) { background: var(--color-primary-container); box-shadow: 0 4px 12px rgb(0 63 128 / 16%); }
+.btn-primary:active:not(:disabled) { box-shadow: none; }
+.tis-mobile-brand { gap: 16px; margin-bottom: 48px; color: var(--color-primary); }
+
+@media (max-width: 1023px) {
+  .tis-login-form { padding: 48px 24px; min-height: 100dvh; border-top: 6px solid var(--color-primary); }
+}
+@media (max-width: 639px) {
+  .tis-login-form { padding: 36px 24px; }
+  .tis-login-card input { font-size: 16px; }
 }
